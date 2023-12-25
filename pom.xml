@@ -11,6 +11,7 @@
     <modules>
         <module>common-core</module>
         <module>example-web</module>
+        <module>common-webclient</module>
     </modules>
 
     <properties>

@@ -94,16 +94,44 @@ public class AppConfig {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class WebServer {
+        /**
+         * 服务器端口号
+         */
         private int port;
+        /**
+         * 服务器主机名
+         */
         private String host;
+        /**
+         * ALPN版本列表
+         */
         private String[] alpnVersions;
+        /**
+         * 服务器路径前缀
+         */
         private String prefix;
+        /**
+         * 超时时间
+         */
         private int timeout;
+        /**
+         * 是否启用日志记录
+         */
         private boolean logEnabled;
+        /**
+         * 是否支持压缩
+         */
         private boolean compressionSupported;
+        /**
+         * 压缩级别
+         */
         private int compressionLevel;
+        /**
+         * 忽略的路径列表
+         */
         private String[] ignorePaths;
     }
+
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -111,22 +139,38 @@ public class AppConfig {
         private Mysql mysql;
     }
 
+    /**
+     * MySQL数据库连接配置
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Mysql {
+        /** 主机地址 */
         private String host;
+        /** 端口号 */
         private int port;
+        /** 用户名 */
         private String username;
+        /** 密码 */
         private String password;
+        /** 数据库名 */
         private String database;
+        /** 字符集 */
         private String charset;
+        /** 时区 */
         private String timezone;
+        /** 最大连接池大小 */
         private int maxPoolSize;
+        /** 静默超时时间 */
         private int idleTimeout;
+        /** 连接超时时间 */
         private int connectionTimeout;
+        /** 连接最长存活时间 */
         private int maxLifetime;
+        /** 最大等待队列大小 */
         private int maxWaitQueueSize;
     }
+
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -137,33 +181,99 @@ public class AppConfig {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Rabbitmq {
+        /**
+         * RabbitMQ的主机地址
+         */
         private String host;
+        /**
+         * RabbitMQ的端口号
+         */
         private int port;
+        /**
+         * RabbitMQ的用户名
+         */
         private String username;
+        /**
+         * RabbitMQ的密码
+         */
         private String password;
+        /**
+         * RabbitMQ的虚拟主机
+         */
         private String virtualHost;
+        /**
+         * RabbitMQ的最大消息确认数量
+         */
         private int maxQos;
+        /**
+         * 请求的通道最大数量
+         */
         private int requestedChannelMax;
+        /**
+         * 是否自动恢复启用
+         */
         private boolean automaticRecoveryEnabled;
+        /**
+         * 网络恢复间隔
+         */
         private int networkRecoveryInterval;
+        /**
+         * 手动超时时间
+         */
         private int handshakeTimeout;
     }
+
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Vertx {
+        /**
+         * 服务端页控制器版本。
+         */
         private String verticle;
+
+        /**
+         * 实例数量。
+         */
         private int instances;
+
+        /**
+         * 是否开启故障转移。
+         */
         private boolean ha;
     }
 
+
+    /**
+     * WebClient类，表示一个用于发送HTTP请求的客户端。
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class WebClient {
+        /**
+         * maxPoolSize，表示最大连接池大小。
+         */
         private int maxPoolSize;
+
+        /**
+         * connectTimeout，表示连接超时时间。
+         */
         private int connectTimeout;
+
+        /**
+         * readIdleTimeout，表示读取空闲超时时间。
+         */
         private int readIdleTimeout;
+
+        /**
+         * idleTimeout，表示连接空闲超时时间。
+         */
         private int idleTimeout;
+
+        /**
+         * writeIdleTimeout，表示写入空闲超时时间。
+         */
         private int writeIdleTimeout;
     }
+
 }

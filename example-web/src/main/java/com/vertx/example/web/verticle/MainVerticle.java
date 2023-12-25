@@ -8,11 +8,7 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        try {
-            new VertxLoadConfig().init("");
-            StaticLog.info("启动项目成功");
-        } catch (Exception e) {
-            StaticLog.error(e, "启动项目失败");
-        }
+        new VertxLoadConfig().init("");
+        StaticLog.info("启动项目成功");
     }
 }

@@ -126,7 +126,7 @@ public class VertxLoadConfig {
                     System.out.println("警告: 数据库模型类" + classInfo.getName() + "没有名为\"" + idField + "\"的字段,请检查是否有误");
                 }
             });
-        } catch (Exception | UniqueAddressException e) {
+        } catch (Exception e) {
             StaticLog.error(e, "扫描地址唯一性失败");
         }
     }

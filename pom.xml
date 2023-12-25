@@ -12,6 +12,7 @@
         <module>common-core</module>
         <module>example-web</module>
         <module>common-webclient</module>
+        <module>common-webserver</module>
     </modules>
 
     <properties>

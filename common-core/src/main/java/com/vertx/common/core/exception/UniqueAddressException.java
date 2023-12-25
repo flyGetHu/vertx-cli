@@ -1,6 +1,6 @@
 package com.vertx.common.core.exception;
 
-public class UniqueAddressException extends Throwable {
+public class UniqueAddressException extends RuntimeException {
     public UniqueAddressException(String msg) {
         super(msg);
     }

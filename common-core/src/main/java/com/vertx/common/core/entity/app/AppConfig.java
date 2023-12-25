@@ -1,7 +1,10 @@
 package com.vertx.common.core.entity.app;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.vertx.core.http.HttpVersion;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * app: # 应用配置
@@ -105,7 +108,7 @@ public class AppConfig {
         /**
          * ALPN版本列表
          */
-        private String[] alpnVersions;
+        private List<HttpVersion> alpnVersions = List.of(HttpVersion.HTTP_2, HttpVersion.HTTP_1_1);
         /**
          * 服务器路径前缀
          */
@@ -145,29 +148,53 @@ public class AppConfig {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Mysql {
-        /** 主机地址 */
+        /**
+         * 主机地址
+         */
         private String host;
-        /** 端口号 */
+        /**
+         * 端口号
+         */
         private int port;
-        /** 用户名 */
+        /**
+         * 用户名
+         */
         private String username;
-        /** 密码 */
+        /**
+         * 密码
+         */
         private String password;
-        /** 数据库名 */
+        /**
+         * 数据库名
+         */
         private String database;
-        /** 字符集 */
+        /**
+         * 字符集
+         */
         private String charset;
-        /** 时区 */
+        /**
+         * 时区
+         */
         private String timezone;
-        /** 最大连接池大小 */
+        /**
+         * 最大连接池大小
+         */
         private int maxPoolSize;
-        /** 静默超时时间 */
+        /**
+         * 静默超时时间
+         */
         private int idleTimeout;
-        /** 连接超时时间 */
+        /**
+         * 连接超时时间
+         */
         private int connectionTimeout;
-        /** 连接最长存活时间 */
+        /**
+         * 连接最长存活时间
+         */
         private int maxLifetime;
-        /** 最大等待队列大小 */
+        /**
+         * 最大等待队列大小
+         */
         private int maxWaitQueueSize;
     }
 

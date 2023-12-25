@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/common-core/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-webclient/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-webclient/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-webserver/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-webserver/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/example-web/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/example-web/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/example-web/src/main/resources" charset="UTF-8" />

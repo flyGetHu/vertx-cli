@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017 Red Hat, Inc.
+  ~
+  ~ Red Hat licenses this file to you under the Apache License, version 2.0
+  ~ (the "License"); you may not use this file except in compliance with the
+  ~ License.  You may obtain a copy of the License at:
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  ~ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  ~ License for the specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<hazelcast xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.hazelcast.com/schema/config"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           https://www.hazelcast.com/schema/config/hazelcast-config-4.2.xsd">
+
+
+    <!--  配置文档  https://docs.hazelcast.com/imdg/latest/-->
+
+    <multimap name="__vertx.subs">
+        <backup-count>1</backup-count>
+        <value-collection-type>SET</value-collection-type>
+    </multimap>
+
+    <map name="__vertx.haInfo">
+        <backup-count>1</backup-count>
+    </map>
+
+    <map name="__vertx.nodeInfo">
+        <backup-count>1</backup-count>
+    </map>
+    <!--   cp子系统保证集群使用分布式锁,分布式计数器和共享map等操作保证数据一致性     -->
+    <!--    <cp-subsystem>-->
+    <!--        &lt;!&ndash;   为了保证cp系统可用,可以启动 cp-member-count 个与业务无关的服务,维护cp系统最小成员    &ndash;&gt;-->
+    <!--        <cp-member-count>0</cp-member-count>-->
+    <!--        <group-size>0</group-size>-->
+    <!--        <session-time-to-live-seconds>30</session-time-to-live-seconds>-->
+    <!--        <session-heartbeat-interval-seconds>3</session-heartbeat-interval-seconds>-->
+    <!--        <missing-cp-member-auto-removal-seconds>360</missing-cp-member-auto-removal-seconds>-->
+    <!--        <fail-on-indeterminate-operation-state>true</fail-on-indeterminate-operation-state>-->
+    <!--        <semaphores>-->
+    <!--            <semaphore>-->
+    <!--                <name>__vertx.*</name>-->
+    <!--                <jdk-compatible>false</jdk-compatible>-->
+    <!--                <initial-permits>1</initial-permits>-->
+    <!--            </semaphore>-->
+    <!--        </semaphores>-->
+    <!--    </cp-subsystem>-->
+
+    <properties>
+        <property name="hazelcast.logging.type">log4j2</property>
+    </properties>
+</hazelcast>

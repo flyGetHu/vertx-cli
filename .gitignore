@@ -1,0 +1,54 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### idea ###
+.idea
+# 忽略idea生成的.iml文件
+*.iml
+# 忽略idea生成的.ipr文件
+*.ipr
+# 忽略idea生成的.iws文件
+*.iws
+# 忽略idea生成的workspace文件
+workspace.xml
+# 忽略idea生成的tasks文件
+tasks.xml
+# 忽略idea生成的*.tmp文件
+*.tmp
+# 忽略idea生成的*.tmp文件

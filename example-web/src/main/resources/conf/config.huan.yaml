@@ -1,0 +1,70 @@
+app: # 应用配置
+  name: "example" # 应用名称
+  version: "1.0.0" # 应用版本
+  description: "示例项目" # 应用描述
+webServer: # web服务配置
+  port: 3020 # 服务端口
+  host: "0.0.0.0" # 服务绑定的ip
+  alpnVersions: # 支持的协议版本
+    - "HTTP_2"
+    - "HTTP_1_1"
+  prefix: "/api/example/*" # 路由前缀
+  timeout: 30000 # web请求超时时间
+  logEnabled: true # 是否开启日志
+  compressionSupported: true # 是否支持压缩
+  compressionLevel: 6 # 压缩级别
+  ignorePaths: # 忽略的路径
+    - "/api/example/health"
+
+database: # 数据库配置
+  mysql: # mysql数据库配置
+    host: "127.0.0.1" # 数据库地址
+    port: 3306 # 数据库端口
+    username: "root" # 数据库用户名
+    password: "123456" # 数据库密码
+    database: "vertx-example" # 数据库名称
+    charset: "utf8mb4" # 数据库编码
+    timezone: "Asia/Shanghai" # 数据库时区
+    maxPoolSize: 16 # 最大连接数 时间配置单位s
+    idleTimeout: 30 # 空闲连接超时时间
+    connectionTimeout: 2 # 连接超时时间
+    maxLifetime: 1800 # 连接最大生命周期
+    maxWaitQueueSize: 5000 #
+  redis:
+    host: "127.0.0.1" # redis地址
+    port: 6379 # redis端口
+    password: "" # redis密码
+    database: 0 # redis数据库
+    maxPoolSize: 16 # 最大连接数
+    maxPoolWaiting: 5000 # 最大等待数
+mq:
+  rabbitmq: # rabbitmq配置 com.vertx.common.entity.Rabbitmq
+    host: "127.0.0.1" # rabbitmq地址
+    port: 5672 # rabbitmq端口
+    username: "guest" # rabbitmq用户名
+    password: "guest" # rabbitmq密码
+    virtualHost: "/vertx-example" # rabbitmq虚拟主机
+    sendConfirm: false # 是否开启发送确认
+    maxQos: 10 # 最大qos
+    requestedChannelMax: 4095 #
+    automaticRecoveryEnabled: true # 是否开启自动恢复
+    networkRecoveryInterval: 5000 # 网络恢复间隔
+    handshakeTimeout: 10000 # 握手超时时间
+    connectionTimeout: 10000 # 连接超时时间
+    reconnectAttempts: 100 # 重连次数
+    reconnectInterval: 500 # 重连间隔
+    requestedHeartbeat: 10 # 心跳间隔
+
+
+
+vertx: # vertx配置
+  verticle: com.vertx.example.verticle.MainVerticle # verticle类
+  instances: 1 # verticle实例数
+  ha: true # 是否开启ha
+
+webClient: # web客户端配置
+  maxPoolSize: 16 # 最大连接数
+  connectTimeout: 2000 # 连接超时时间
+  readIdleTimeout: 20000 # 读取超时时间
+  idleTimeout: 10000 # 空闲连接超时时间
+  writeIdleTimeout: 10000 # 写入超时时间

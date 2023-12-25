@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configure.status 为设置日志输出级别，级别如下：OFF 、FATAL 、ERROR、WARN、INFO、DEBUG、TRACE
+	、ALL -->
+<!-- configure.monitorInterval 监控间隔 指log4j2每隔600秒（10分钟），自动监控该配置文件是否有变化，如果变化，则自动根据文件内容重新配置 -->
+<configuration status="OFF" monitorInterval="600">
+    <properties>
+        <property name="LOG_HOME">./logs/</property>
+        <property name="LOG_BACK_HOME">${LOG_HOME}/backup</property>
+        <property name="ERROR_FILE_NAME">error</property>
+        <property name="WARN_FILE_NAME">warn</property>
+        <property name="INFO_FILE_NAME">info</property>
+        <property name="DEBUG_FILE_NAME">debug</property>
+    </properties>
+    <!--先定义所有的appender -->
+    <appenders>
+        <!--这个输出控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--这个都知道是输出日志的格式 -->
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss} |- %highlight{%5p}{TRACE=gray, DEBUG=green, INFO=blue, WARN=yellow, ERROR=red, FATAL=red} in %style{%C{1}:%L}{cyan} [%style{%t}{magenta}] - %m%n"/>
+        </Console>
+
+        <!-- 配置日志输出文件名字 追加读写 -->
+        <!-- Error console log -->
+        <RollingFile name="ErrLog" fileName="${LOG_HOME}/${ERROR_FILE_NAME}.log"
+                     filePattern="${LOG_BACK_HOME}/$${date:yyyy-MM}/${ERROR_FILE_NAME}.%d{yyyy-MM-dd}.log"
+                     append="true">
+            <!-- 输出格式 -->
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <!-- 设置策略 -->
+            <Policies>
+                <!-- 基于时间的触发策略。该策略主要是完成周期性的log文件封存工作。有两个参数： interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，
+          比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟 modulate，boolean型，说明是否对封存时间进行调制。若modulate=true， 则封存时间将以0点为边界进行偏移计算。比如，modulate=true，interval=4hours， 那么假设上次封存日志的时间为03:00，则下次封存日志的时间为04:00，
+          之后的封存时间依次为08:00，12:00，16:00 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- Warn console log -->
+        <RollingFile name="WarnLog" fileName="${LOG_HOME}/${WARN_FILE_NAME}.log"
+                     filePattern="${LOG_BACK_HOME}/$${date:yyyy-MM}/${WARN_FILE_NAME}.%d{yyyy-MM-dd}.log" append="true">
+            <!-- 输出格式 -->
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <!-- 设置策略 -->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- Info console log -->
+        <RollingFile name="InfoLog" fileName="${LOG_HOME}/${INFO_FILE_NAME}.log"
+                     filePattern="${LOG_BACK_HOME}/$${date:yyyy-MM}/${INFO_FILE_NAME}.%d{yyyy-MM-dd}.log" append="true">
+            <!-- 输出格式 -->
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <!-- 设置策略 -->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <!--删除30天前的日志-->
+                <Delete basePath="${LOG_BACK_HOME}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- Debug console log -->
+        <RollingFile name="DebugLog" fileName="${LOG_HOME}/${DEBUG_FILE_NAME}.log"
+                     filePattern="${LOG_BACK_HOME}/$${date:yyyy-MM}/${DEBUG_FILE_NAME}.%d{yyyy-MM-dd}.log"
+                     append="true">
+            <!-- 输出格式 -->
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <!-- 设置策略 -->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+    </appenders>
+    <loggers>
+        <!-- 默认显示方式 -->
+        <root level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="ErrLog"/>
+            <appender-ref ref="WarnLog"/>
+            <appender-ref ref="InfoLog"/>
+            <appender-ref ref="DebugLog"/>
+        </root>
+    </loggers>
+</configuration>

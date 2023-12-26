@@ -21,34 +21,6 @@ public class ExampleWebApp {
     public static void main(String[] args) {
         // 加载配置文件
         final Config config = ConfigUtil.loadConfig();
-        // 获取Vertx配置选项
-        final VertxOptions options = getVertxOptions(config);
-        // 集群Vertx
-        Vertx.clusteredVertx(options).onSuccess(res -> {
-            // 设置系统属性
-            System.setProperty("org.jooq.no-logo", "true");
-            System.setProperty("org.jooq.no-tips", "true");
-            // 创建部署选项
-            final DeploymentOptions deploymentOptions = new DeploymentOptions();
-            deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
-            // 部署Verticle
-            res.deployVerticle(MainVerticle.class.getName(), deploymentOptions);
-            // 日志信息：应用启动成功
-            StaticLog.info("App start success");
-        }).onFailure(e -> {
-            // 日志错误信息：应用启动失败
-            StaticLog.error("App start fail", e);
-        });
-    }
-
-
-    /**
-     * 获取Vertx配置选项
-     *
-     * @param config 配置对象
-     * @return Vertx配置选项
-     */
-    private static VertxOptions getVertxOptions(Config config) {
         // 获取网络配置
         final NetworkConfig networkConfig = config.getNetworkConfig();
         // 获取加入配置
@@ -65,12 +37,22 @@ public class ExampleWebApp {
         tcpIpConfig.addMember("127.0.0.1");
         // 创建Hazelcast集群管理器
         final HazelcastClusterManager hazelcastClusterManager = new HazelcastClusterManager(config);
-        // 创建Vertx构建器
-        final VertxBuilder vertxBuilder = new VertxBuilder();
-        // 设置集群管理器
-        vertxBuilder.clusterManager(hazelcastClusterManager);
-        // 返回Vertx配置选项
-        return vertxBuilder.options();
+        // 集群Vertx
+        Vertx.builder().withClusterManager(hazelcastClusterManager).buildClustered()
+                .onSuccess(res -> {
+                    // 设置系统属性
+                    System.setProperty("org.jooq.no-logo", "true");
+                    System.setProperty("org.jooq.no-tips", "true");
+                    // 创建部署选项
+                    final DeploymentOptions deploymentOptions = new DeploymentOptions();
+                    deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
+                    // 部署Verticle
+                    res.deployVerticle(MainVerticle.class.getName(), deploymentOptions);
+                    // 日志信息：应用启动成功
+                    StaticLog.info("App start success");
+                }).onFailure(e -> {
+                    // 日志错误信息：应用启动失败
+                    StaticLog.error("App start fail", e);
+                });
     }
-
 }

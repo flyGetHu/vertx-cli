@@ -16,15 +16,14 @@ import com.hazelcast.config.TcpIpConfig;
 import com.vertx.common.core.config.VertxLoadConfig;
 import com.vertx.common.core.enums.EnvEnum;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.EventBusOptions;
 import io.vertx.core.impl.launcher.VertxCommandLauncher;
 import io.vertx.core.impl.launcher.VertxLifecycleHooks;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.spi.cluster.hazelcast.ConfigUtil;
-import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -93,11 +92,9 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
         tcpIpConfig.setEnabled(true);
         // 添加成员节点的IP地址和端口
         tcpIpConfig.setMembers(Arrays.asList(CLUSTER_IPS));
-        final ClusterManager mgr = new HazelcastClusterManager(config);
-        vertxOptions.setClusterManager(mgr);
         final EventBusOptions eventBusOptions = vertxOptions.getEventBusOptions();
         // 设置bus集群超时时间
-        eventBusOptions.setConnectTimeout(1000 * 5);
+        eventBusOptions.setConnectTimeout(1000 * 30);
         // 设置集群ping时间
         eventBusOptions.setClusterPingInterval(TimeUnit.SECONDS.toMillis(10));
         // 设置集群ping回复时间
@@ -111,7 +108,7 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
 
     @Override
     public void afterStartingVertx(Vertx vertx) {
-        StaticLog.info("执行钩子函数:{},{}", "afterStartingVertx", vertx.isClustered());
+        StaticLog.info("执行钩子函数:{},{},{}", "afterStartingVertx", vertx.isClustered(), vertx.isNativeTransportEnabled());
     }
 
     @Override
@@ -119,6 +116,7 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
         StaticLog.info("执行钩子函数:{}", "beforeDeployingVerticle");
         deploymentOptions.setInstances(1);
         deploymentOptions.setHa(true);
+        deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
     }
 
     @Override

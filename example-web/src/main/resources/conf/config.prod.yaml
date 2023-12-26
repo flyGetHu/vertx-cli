@@ -10,7 +10,7 @@ webServer: # web服务配置
     - "HTTP_1_1"
   prefix: "/api/example/*" # 路由前缀
   timeout: 30000 # web请求超时时间
-  logEnabled: true # 是否开启日志
+  logEnabled: false # 是否开启日志
   compressionSupported: true # 是否支持压缩
   compressionLevel: 6 # 压缩级别
   ignorePaths: # 忽略的路径

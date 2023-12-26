@@ -15,7 +15,8 @@ public class MainVerticle extends AbstractVerticle {
         new VertxLoadConfig().init("");
         final DeploymentOptions deploymentOptions = new DeploymentOptions();
         deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
-        deploymentOptions.setInstances(4);
+        //获取可使用逻辑核心
+        deploymentOptions.setInstances(Runtime.getRuntime().availableProcessors());
         vertx.deployVerticle(WebVerticle.class.getName(), deploymentOptions);
         StaticLog.info("启动项目成功");
     }

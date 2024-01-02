@@ -13,6 +13,7 @@
         <module>example-web</module>
         <module>common-webclient</module>
         <module>common-webserver</module>
+        <module>common-redis</module>
     </modules>
 
     <properties>

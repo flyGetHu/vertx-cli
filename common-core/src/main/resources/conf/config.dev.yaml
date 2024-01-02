@@ -30,6 +30,13 @@ database: # 数据库配置
     connectionTimeout: 2 # 连接超时时间
     maxLifetime: 1800 # 连接最大生命周期
     maxWaitQueueSize: 5000 #
+  redis:
+    host: "192.168.2.234" # redis地址
+    port: 6379 # redis端口
+    password: "anjun2020" # redis密码
+    database: 1 # redis数据库
+    maxPoolSize: 16 # 最大连接数
+    maxPoolWaiting: 5000 # 最大等待数
 mq:
   rabbitmq: # rabbitmq配置 com.vertx.common.entity.Rabbitmq
     host: "127.0.0.1" # rabbitmq地址

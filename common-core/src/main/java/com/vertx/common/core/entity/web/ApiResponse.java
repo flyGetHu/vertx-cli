@@ -16,12 +16,9 @@ public class ApiResponse {
     @JsonProperty("msg")
     private String msg;
     @JsonProperty("data")
-    private Object data = "";
+    private Object data;
     @JsonProperty("extra")
-    private Object extra = "";
-
-    public ApiResponse() {
-    }
+    private Object extra;
 
     public ApiResponse(ApiResponseStatusEnum status, int code, String msg, Object data, Object extra) {
         this.status = status;

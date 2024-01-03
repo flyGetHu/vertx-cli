@@ -827,6 +827,21 @@ public class RedisHelper {
       }
     }
 
+    /**
+     * unwatch
+     * 
+     * @param key
+     * @return 成功返回true，失败返回false
+     */
+    public static Boolean unwatch(String key) {
+      try {
+        await(redisClient.unwatch());
+        return true;
+      } catch (Throwable e) {
+        StaticLog.error(e, "redis unwatch error");
+        return false;
+      }
+    }
+    
   }
-
 }

@@ -15,6 +15,7 @@
         <module>common-webserver</module>
         <module>common-redis</module>
         <module>common-eventbus</module>
+        <module>common-mysql</module>
     </modules>
 
     <properties>
@@ -29,6 +30,7 @@
         <vertx.version>4.5.1</vertx.version>
         <junit-jupiter.version>5.9.1</junit-jupiter.version>
         <lombok.version>1.18.30</lombok.version>
+        <jooq.version>3.19.1</jooq.version>
 
         <launcher.class>com.vertx.common.core.MainLaunch</launcher.class>
     </properties>

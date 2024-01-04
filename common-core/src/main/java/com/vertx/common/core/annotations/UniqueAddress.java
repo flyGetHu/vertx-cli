@@ -6,6 +6,7 @@ import java.lang.annotation.Target;
 
 /**
  * 唯一地址
+ * 启动时检查唯一地址
  */
 @Target({java.lang.annotation.ElementType.TYPE})
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)

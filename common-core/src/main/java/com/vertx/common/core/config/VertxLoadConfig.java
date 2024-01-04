@@ -117,7 +117,7 @@ public class VertxLoadConfig {
 
       // 检查数据库模型类是否有id字段
       ClassInfoList classesWithAnnotation = scanResult
-          .getClassesWithAnnotation("com.vertx.common.annotations.TableName");
+          .getClassesWithAnnotation("com.vertx.common.core.annotations.TableName");
       classesWithAnnotation.forEach(classInfo -> {
         String idField = "id";
         Stream<String> fieldNames = scanResult.getClassInfo(classInfo.getName()).getFieldInfo().stream()
@@ -154,7 +154,7 @@ public class VertxLoadConfig {
       // 遍历类上的注解信息
       for (AnnotationInfo annotationInfo : annotationInfos) {
         // 如果注解名为"com.vertx.common.annotations.UniqueAddress"
-        if (annotationInfo.getName().equals("com.vertx.common.annotations.UniqueAddress")) {
+        if (annotationInfo.getName().equals("com.vertx.common.core.annotations.UniqueAddress")) {
           // 获取唯一地址
           String uniqueAddress = (String) annotationInfo.getParameterValues().get(0).getValue();
           // 如果事件总书存在重复地址

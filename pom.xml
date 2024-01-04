@@ -14,6 +14,7 @@
         <module>common-webclient</module>
         <module>common-webserver</module>
         <module>common-redis</module>
+        <module>common-eventbus</module>
     </modules>
 
     <properties>
@@ -80,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version> <!-- 适合你的项目的版本 -->
+                <version>3.8.1</version>        <!-- 适合你的项目的版本 -->
                 <configuration>
                     <!-- 指定编译 JDK 版本 -->
                     <source>21</source>

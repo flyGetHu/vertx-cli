@@ -28,6 +28,11 @@
             <artifactId>common-webserver</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.vertx.cli</groupId>
+            <artifactId>common-eventbus</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 

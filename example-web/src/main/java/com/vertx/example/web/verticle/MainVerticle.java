@@ -17,7 +17,7 @@ public class MainVerticle extends AbstractVerticle {
         deploymentOptions.setInstances(1);
         final List<Future<String>> futures = List.of(
                 vertx.deployVerticle(WebVerticle.class.getName(), deploymentOptions),
-                vertx.deployVerticle(EventBusVerticle.class.getName(), deploymentOptions)
+                vertx.deployVerticle(BusVerticle.class.getName(), deploymentOptions)
         );
         Future.all(futures)
                 .onSuccess(aVoid -> {

@@ -129,7 +129,7 @@ public class MysqlHelper {
     public <T> T withTransaction(Function<SqlConnection, T> func) {
         SqlConnection connection = null;
         Transaction transaction = null;
-        T result = null;
+        T result;
         try {
             connection = await(mysqlClient.getConnection());
             transaction = await(connection.begin());
@@ -140,7 +140,9 @@ public class MysqlHelper {
         } catch (Throwable e) {
             // 回滚事务
             StaticLog.error(e, "事务执行失败");
-            await(transaction.rollback());
+            if (transaction != null) {
+                await(transaction.rollback());
+            }
             throw e;
         } finally {
             // 关闭连接
@@ -336,7 +338,7 @@ public class MysqlHelper {
             StaticLog.warn(">>>>>> insert data is empty");
             return null;
         }
-        final Class<?> aClass = datas.get(0).getClass();
+        final Class<?> aClass = datas.getFirst().getClass();
         final Field[] declaredFields = aClass.getDeclaredFields();
         final LinkedList<HashMap<String, Object>> fileKeyValueList = new LinkedList<>();
         for (Object data : datas) {
@@ -357,7 +359,7 @@ public class MysqlHelper {
             }
         }
         final InsertValuesStepN<Record> insertValuesStepN = dslContext.insertInto(DSL.table(getTableName(aClass)),
-                fileKeyValueList.get(0).keySet().stream().map(DSL::field).toList());
+                fileKeyValueList.getFirst().keySet().stream().map(DSL::field).toList());
         for (HashMap<String, Object> map : fileKeyValueList) {
             insertValuesStepN.values(map.values().toArray());
         }
@@ -418,7 +420,7 @@ public class MysqlHelper {
         List<org.jooq.Field<Object>> fieldList = new ArrayList<>(Arrays.stream(c.getDeclaredFields())
                 .map(field -> DSL.field(underlineName(field.getName()))).toList());
         if (columns != null && !columns.isEmpty()) {
-            fieldList = columns.stream().map(DSL::field).toList();
+            fieldList = columns.stream().map(s -> DSL.field(underlineName(s))).toList();
         }
         final SelectConditionStep<Record> selectConditionStep = dslContext.select(fieldList)
                 .from(DSL.table(getTableName(c))).where(where);

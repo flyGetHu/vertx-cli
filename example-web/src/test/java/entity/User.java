@@ -1,4 +1,4 @@
-package com.vertx.example.web.model;
+package entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vertx.common.core.annotations.TableName;

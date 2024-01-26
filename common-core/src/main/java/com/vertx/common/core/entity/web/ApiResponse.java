@@ -30,12 +30,6 @@ public class ApiResponse {
 
     // Getters and Setters for all properties...
 
-    @Override
-    public String toString() {
-        // Assuming you're using Jackson for JSON serialization
-        return Json.encode(this);
-    }
-
     public static Buffer successResponse(Object data) {
         return Json.encodeToBuffer(new ApiResponse(ApiResponseStatusEnum.OK, HttpStatus.HTTP_OK, "success", data, null));
     }
@@ -43,7 +37,6 @@ public class ApiResponse {
     public static Buffer successResponse(Object data, Object extra) {
         return Json.encodeToBuffer(new ApiResponse(ApiResponseStatusEnum.OK, HttpStatus.HTTP_OK, "success", data, extra));
     }
-
 
     public static Buffer errorResponse(String message) {
         return Json.encodeToBuffer(new ApiResponse(ApiResponseStatusEnum.ERROR, HttpStatus.HTTP_INTERNAL_ERROR, message, null, null));
@@ -55,5 +48,11 @@ public class ApiResponse {
 
     public static Buffer errorResponse(String message, int code, Object data, Object extra) {
         return Json.encodeToBuffer(new ApiResponse(ApiResponseStatusEnum.ERROR, code, message, data, extra));
+    }
+
+    @Override
+    public String toString() {
+        // Assuming you're using Jackson for JSON serialization
+        return Json.encode(this);
     }
 }

@@ -10,7 +10,8 @@ public class WebClient {
 
     /**
      * 初始化WebClient并返回
-     * @param config WebClient的配置信息
+     *
+     * @param config    WebClient的配置信息
      * @param isDefault 是否为默认的WebClient实例
      * @return 初始化后的WebClient实例
      */
@@ -25,8 +26,8 @@ public class WebClient {
         options.setMaxPoolSize(config.getMaxPoolSize());
         options.setUserAgent("vertx-web-client");
         final io.vertx.ext.web.client.WebClient client = io.vertx.ext.web.client.WebClient.create(VertxLoadConfig.vertx, options);
-        if(isDefault){
-            webclient= client;
+        if (isDefault) {
+            webclient = client;
         }
         return webclient;
     }

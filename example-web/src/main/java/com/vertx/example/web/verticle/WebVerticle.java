@@ -9,6 +9,7 @@ public class WebVerticle extends AbstractVerticle {
 
     /**
      * 启动方法
+     *
      * @throws Exception 异常
      */
     @Override

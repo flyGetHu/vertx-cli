@@ -8,6 +8,7 @@ public class RedisInitException extends RuntimeException {
     public RedisInitException(String message, Throwable cause) {
         super(message, cause);
     }
+
     public RedisInitException(String message) {
         super(message);
     }

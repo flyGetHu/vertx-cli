@@ -191,9 +191,15 @@ public class MysqlHelper {
     int count = 0;
     // 批量插入数据
     final List<List<Object>> lists = CollUtil.split(data, batchSize);
+    boolean isHaveConnection = connection != null;
     final SqlConnection connect = connection != null ? connection : await(mysqlClient.getConnection());
+    Transaction parentTransaction = connect.transaction();
+    boolean isHaveTransaction = parentTransaction != null;
     // 开启事务
-    final Transaction transaction = await(connect.begin());
+    Transaction transaction = null;
+    if (!isHaveTransaction) {
+      transaction = await(connect.begin());
+    }
     try {
       for (List<Object> list : lists) {
         final String querySql = buildInsertSql(list);
@@ -201,14 +207,20 @@ public class MysqlHelper {
         count += rows.rowCount();
       }
       // 提交事务
-      await(transaction.commit());
+      if (!isHaveTransaction && transaction != null) {
+        await(transaction.commit());
+      }
     } catch (Throwable e) {
-      // 回滚事务
-      await(transaction.rollback());
       StaticLog.error(e, "批量插入数据失败");
+      // 回滚事务
+      if (!isHaveTransaction && transaction != null) {
+        await(transaction.rollback());
+      }
       throw e;
     } finally {
-      await(connect.close());
+      if (!isHaveConnection) {
+        await(connect.close());
+      }
     }
     return count;
   }
@@ -245,9 +257,17 @@ public class MysqlHelper {
       }
     }
     final List<List<String>> lists = CollUtil.split(batchSqlList, batchSize);
+    // 是否有数据库连接
+    boolean isHaveConnection = sqlConnection != null;
     final SqlConnection connect = sqlConnection != null ? sqlConnection : await(mysqlClient.getConnection());
+    final Transaction parentTransaction = connect.transaction();
+    boolean isHaveTransaction = parentTransaction != null;
     // 开启事务
-    final Transaction transaction = await(connect.begin());
+    Transaction transaction = null;
+    // 如果外部传入了事务,则不需要开启事务
+    if (!isHaveTransaction) {
+      transaction = await(connect.begin());
+    }
     try {
       for (List<String> list : lists) {
         for (String querySql : list) {
@@ -255,15 +275,21 @@ public class MysqlHelper {
           count += rows.rowCount();
         }
       }
-      // 提交事务
-      await(transaction.commit());
+      // 提交事务,如果外部传入了事务,则不需要提交事务,由外部提交事务
+      if (!isHaveTransaction && transaction != null) {
+        await(transaction.commit());
+      }
     } catch (Throwable e) {
-      // 回滚事务
-      await(transaction.rollback());
+      // 回滚事务 如果外部传入了事务,则不需要回滚事务,由外部回滚事务
+      if (!isHaveTransaction && transaction != null) {
+        await(transaction.rollback());
+      }
       StaticLog.error(e, ">>>>>> 批量更新数据失败", lists);
       throw e;
     } finally {
-      await(connect.close());
+      if (!isHaveConnection) {
+        await(connect.close());
+      }
     }
     return count;
   }

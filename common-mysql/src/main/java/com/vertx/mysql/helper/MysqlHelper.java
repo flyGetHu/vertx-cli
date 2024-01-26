@@ -18,6 +18,7 @@ import org.jooq.impl.DSL;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.vertx.common.core.config.VertxLoadConfig.active;
 import static com.vertx.common.core.utils.StrUtil.underlineName;
@@ -115,6 +116,38 @@ public class MysqlHelper {
 
   public static <T> List<T> select(Class<T> c, Condition where, String lastSql) {
     return selectDsl(c, where, null, lastSql);
+  }
+
+  /**
+   * 在事务中执行
+   * 
+   * @param func 事务执行函数,参数为数据库连接,返回值表示事务执行结果
+   * @return 事务执行结果
+   * @throws Throwable 事务执行失败
+   */
+  public <T> T withTransaction(Function<SqlConnection, T> func) {
+    SqlConnection connection = null;
+    Transaction transaction = null;
+    T result = null;
+    try {
+      connection = await(mysqlClient.getConnection());
+      transaction = await(connection.begin());
+      // 执行事务
+      result = func.apply(connection);
+      // 提交事务
+      await(transaction.commit());
+    } catch (Throwable e) {
+      // 回滚事务
+      StaticLog.error(e, "事务执行失败");
+      await(transaction.rollback());
+      throw e;
+    } finally {
+      // 关闭连接
+      if (connection != null) {
+        await(connection.close());
+      }
+    }
+    return result;
   }
 
   private static Long installDsl(Object data, SqlConnection sqlConnection) {

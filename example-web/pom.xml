@@ -38,6 +38,11 @@
             <artifactId>common-mysql</artifactId>
             <version>${common.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vertx.cli</groupId>
+            <artifactId>common-rabbitmq</artifactId>
+            <version>${common.version}</version>
+        </dependency>
     </dependencies>
 
 

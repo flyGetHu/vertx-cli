@@ -1,9 +1,13 @@
-package com.vertx.rabbitmq.enums;
+package com.vertx.example.web.enums;
+
+import com.vertx.example.web.model.User;
+import com.vertx.rabbitmq.enums.IRabbitMqExChangeEnum;
+import com.vertx.rabbitmq.enums.RabbitMqExChangeTypeEnum;
 
 public enum RabbitMqExChangeEnum implements IRabbitMqExChangeEnum {
     // 默认交换机
     DEFAULT(RabbitMqExChangeTypeEnum.DEFAULT, "", String.class, true, false),
-    TESTRabbitMqExChangeEnum(RabbitMqExChangeTypeEnum.FANOUT, "test", String.class, true, false),
+    TESTRabbitMqExChangeEnum(RabbitMqExChangeTypeEnum.FANOUT, "test", User.class, true, false),
     ;
 
     private final RabbitMqExChangeTypeEnum type;

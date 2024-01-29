@@ -70,6 +70,17 @@ public class MysqlClient {
             StaticLog.error("app config is null");
             throw new MysqlClientInitException("app config is null");
         }
+        final PoolOptions poolOptions = getPoolOptions(config, app);
+        final Pool pool = Pool.pool(vertx, mySQLConnectOptions, poolOptions);
+        await(pool.query("select  1").execute());
+        StaticLog.info("mysql连接成功");
+        if (isDef) {
+            mysqlClient = pool;
+        }
+        return pool;
+    }
+
+    private static PoolOptions getPoolOptions(AppConfig.Mysql config, AppConfig.App app) {
         final String poolName = app.getName();
         final String version = app.getVersion();
         final PoolOptions poolOptions = new PoolOptions();
@@ -100,12 +111,6 @@ public class MysqlClient {
             maxLifetime = 1800;
         }
         poolOptions.setMaxLifetime(maxLifetime);
-        final Pool pool = Pool.pool(vertx, mySQLConnectOptions, poolOptions);
-        await(pool.query("select  1").execute());
-        StaticLog.info("mysql连接成功");
-        if (isDef) {
-            mysqlClient = pool;
-        }
-        return pool;
+        return poolOptions;
     }
 }

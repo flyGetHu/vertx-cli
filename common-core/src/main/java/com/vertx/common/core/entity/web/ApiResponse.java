@@ -10,7 +10,7 @@ import io.vertx.core.json.Json;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiResponse {
     @JsonProperty("status")
-    private ApiResponseStatusEnum status = ApiResponseStatusEnum.OK;
+    private ApiResponseStatusEnum status;
     @JsonProperty("code")
     private int code;
     @JsonProperty("msg")

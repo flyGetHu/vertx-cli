@@ -128,6 +128,7 @@ public class VertxLoadConfig {
             });
         } catch (Exception e) {
             StaticLog.error(e, "扫描地址唯一性失败");
+            throw new UniqueAddressException("校验地址唯一性失败", e);
         }
     }
 
@@ -156,7 +157,7 @@ public class VertxLoadConfig {
                 // 如果注解名为"com.vertx.common.annotations.UniqueAddress"
                 if (annotationInfo.getName().equals("com.vertx.common.core.annotations.UniqueAddress")) {
                     // 获取唯一地址
-                    String uniqueAddress = (String) annotationInfo.getParameterValues().get(0).getValue();
+                    String uniqueAddress = (String) annotationInfo.getParameterValues().getFirst().getValue();
                     // 如果事件总书存在重复地址
                     if (eventBusUniqueAddress.contains(uniqueAddress)) {
                         // 打印警告信息

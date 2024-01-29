@@ -30,8 +30,6 @@ public class MainVerticle extends AbstractVerticle {
                     StaticLog.info("部署成功");
                     startPromise.complete();
                 })
-                .onFailure(throwable -> {
-                    StaticLog.error(throwable, "部署失败");
-                });
+                .onFailure(throwable -> StaticLog.error(throwable, "部署失败"));
     }
 }

@@ -5,6 +5,7 @@ import com.vertx.common.core.utils.StrUtil;
 import io.vertx.core.shareddata.Lock;
 
 import static com.vertx.common.core.config.VertxLoadConfig.sharedData;
+import static io.vertx.core.Future.await;
 
 public class SharedLockHelper {
 
@@ -16,8 +17,8 @@ public class SharedLockHelper {
      * @return 锁
      * @throws Exception 异常
      */
-    public static Lock getLock(ISharedLockSharedLockEnum sharedLockEnum, String... args) throws Exception {
-        return sharedData.getLock(StrUtil.format(sharedLockEnum.getKey(), args)).toCompletionStage().toCompletableFuture().get();
+    public static Lock getLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args) throws Exception {
+        return await(sharedData.getLock(StrUtil.format(sharedLockEnum.getKey(), args)));
     }
 
     /**
@@ -28,7 +29,7 @@ public class SharedLockHelper {
      * @param args           锁参数
      * @throws Exception 异常
      */
-    public static void withLock(ISharedLockSharedLockEnum sharedLockEnum, Runnable block, String... args) throws Exception {
+    public static void withLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args, Runnable block) throws Exception {
         Lock lock = getLock(sharedLockEnum, args);
         try {
             block.run();
@@ -45,11 +46,11 @@ public class SharedLockHelper {
      * @return 锁
      * @throws Exception 异常
      */
-    public static Lock getLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String... args) throws Exception {
-        return sharedData.getLockWithTimeout(StrUtil.format(sharedLockEnum.getKey(), args), timeout).toCompletionStage().toCompletableFuture().get();
+    public static Lock getLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String[] args) throws Exception {
+        return await(sharedData.getLockWithTimeout(StrUtil.format(sharedLockEnum.getKey(), args), timeout));
     }
 
-    public static void withLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, Runnable block, String... args) throws Exception {
+    public static void withLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String[] args, Runnable block) throws Exception {
         Lock lock = getLockWithTimeout(sharedLockEnum, timeout, args);
         try {
             block.run();
@@ -58,11 +59,11 @@ public class SharedLockHelper {
         }
     }
 
-    public static Lock getLocalLock(ISharedLockSharedLockEnum sharedLockEnum, String... args) throws Exception {
-        return sharedData.getLocalLock(StrUtil.format(sharedLockEnum.getKey(), args)).toCompletionStage().toCompletableFuture().get();
+    public static Lock getLocalLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args) throws Exception {
+        return await(sharedData.getLocalLock(StrUtil.format(sharedLockEnum.getKey(), args)));
     }
 
-    public static void withLocalLock(ISharedLockSharedLockEnum sharedLockEnum, Runnable block, String... args) throws Exception {
+    public static void withLocalLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args, Runnable block) throws Exception {
         Lock lock = getLocalLock(sharedLockEnum, args);
         try {
             block.run();
@@ -71,11 +72,11 @@ public class SharedLockHelper {
         }
     }
 
-    public static Lock getLocalLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String... args) throws Exception {
-        return sharedData.getLocalLockWithTimeout(StrUtil.format(sharedLockEnum.getKey(), args), timeout).toCompletionStage().toCompletableFuture().get();
+    public static Lock getLocalLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String[] args) throws Exception {
+        return await(sharedData.getLocalLockWithTimeout(StrUtil.format(sharedLockEnum.getKey(), args), timeout));
     }
 
-    public static void withLocalLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, Runnable block, String... args) throws Exception {
+    public static void withLocalLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String[] args, Runnable block) throws Exception {
         Lock lock = getLocalLockWithTimeout(sharedLockEnum, timeout, args);
         try {
             block.run();

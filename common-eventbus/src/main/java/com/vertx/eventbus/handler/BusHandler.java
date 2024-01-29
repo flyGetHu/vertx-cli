@@ -124,9 +124,7 @@ public interface BusHandler<Request, Response> {
             }
         });
         // 设置消费者结束处理程序，记录日志：服务地址已关闭
-        consumer.endHandler(v -> {
-            StaticLog.info("服务地址:{}已关闭", address);
-        });
+        consumer.endHandler(v -> StaticLog.info("服务地址:{}已关闭", address));
         // 设置消费者异常处理程序，记录日志：服务地址异常，并注销消费者
         consumer.exceptionHandler(e -> {
             StaticLog.error(e, "服务地址:{}异常", address);

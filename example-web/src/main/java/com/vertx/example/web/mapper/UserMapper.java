@@ -21,6 +21,6 @@ public class UserMapper {
         if (users.isEmpty()) {
             return null;
         }
-        return users.get(0);
+        return users.getFirst();
     }
 }

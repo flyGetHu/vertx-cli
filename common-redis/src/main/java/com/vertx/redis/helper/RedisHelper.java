@@ -689,9 +689,7 @@ public class RedisHelper {
         public static java.util.List<Double> geopos(String key, String member) {
             try {
                 Response value = await(redisClient.geopos(java.util.List.of(key, member)));
-                return value != null ? value.stream().map(item -> {
-                    return Convert.toDouble(item);
-                }).collect(Collectors.toList()) : null;
+                return value != null ? value.stream().map(Convert::toDouble).collect(Collectors.toList()) : null;
             } catch (Throwable e) {
                 StaticLog.error(e, "redis geopos error");
                 return null;

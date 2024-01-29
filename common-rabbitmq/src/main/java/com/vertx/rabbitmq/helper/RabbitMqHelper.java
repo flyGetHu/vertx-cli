@@ -220,12 +220,8 @@ public class RabbitMqHelper {
                     nackMessage(deliveryTag, rabbitMqHandler.getRetryInterval());
                 }
             }
-            rabbitMQConsumer.exceptionHandler(e -> {
-                StaticLog.error(e, "Register consumer failed: queue name: " + queueName);
-            });
-            rabbitMQConsumer.endHandler(v -> {
-                StaticLog.info("Consumer closed: queue name: " + queueName);
-            });
+            rabbitMQConsumer.exceptionHandler(e -> StaticLog.error(e, "Register consumer failed: queue name: " + queueName));
+            rabbitMQConsumer.endHandler(v -> StaticLog.info("Consumer closed: queue name: " + queueName));
             StaticLog.info("Register consumer successful: queue name: " + queueName);
         });
     }

@@ -1,12 +1,14 @@
 package com.vertx.common.core.config;
 
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
 import cn.hutool.log.StaticLog;
 import cn.hutool.log.dialect.log4j2.Log4j2LogFactory;
+import com.vertx.common.core.annotations.TableName;
+import com.vertx.common.core.annotations.UniqueAddress;
 import com.vertx.common.core.entity.app.AppConfig;
 import com.vertx.common.core.exception.UniqueAddressException;
-import io.github.classgraph.*;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -15,9 +17,9 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.SharedData;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static io.vertx.core.Future.await;
 
@@ -56,7 +58,7 @@ public class VertxLoadConfig {
      * @param active 活跃配置名
      */
     public void init(String active) {
-        checkUniqueAddress();
+        localClassFilter();
         vertx = Vertx.currentContext().owner();
         eventBus = vertx.eventBus();
         sharedData = vertx.sharedData();
@@ -104,89 +106,38 @@ public class VertxLoadConfig {
         isInit = true;
     }
 
-    // 检查唯一地址
-    private void checkUniqueAddress() {
-        try (ScanResult scanResult = new ClassGraph().enableAllInfo()
-                .enableStaticFinalFieldConstantInitializerValues()
-                .scan()) {
-            // 检查事件总线接口是否有地址重复
-            scanAndValidateHandlers(scanResult, "com.vertx.eventbus.handler.BusHandler");
-
-            // 检查rabbitmq接口是否有地址重复
-            scanAndValidateHandlers(scanResult, "com.vertx.rabbitmq.handler.RabbitMqHandler");
-
-            // 检查数据库模型类是否有id字段
-            ClassInfoList classesWithAnnotation = scanResult
-                    .getClassesWithAnnotation("com.vertx.common.core.annotations.TableName");
-            classesWithAnnotation.forEach(classInfo -> {
-                String idField = "id";
-                Stream<String> fieldNames = scanResult.getClassInfo(classInfo.getName()).getFieldInfo().stream()
-                        .map(FieldInfo::getName);
-                if (fieldNames.noneMatch(fieldName -> fieldName.equals(idField))) {
-                    System.out.println("警告: 数据库模型类" + classInfo.getName() + "没有名为\"" + idField + "\"的字段,请检查是否有误");
-                }
-            });
-        } catch (Exception e) {
-            StaticLog.error(e, "扫描地址唯一性失败");
-            throw new UniqueAddressException("校验地址唯一性失败", e);
-        }
-    }
-
-    // 扫描实现指定包名的类
-    private void scanAndValidateHandlers(ScanResult scanResult, String packageName) throws UniqueAddressException {
-        // 获取实现指定接口的类信息列表
-        ClassInfoList busHandlerClasses = scanResult.getClassesImplementing(packageName);
+    private void localClassFilter() {
+        final Set<Class<?>> classes = ClassUtil.scanPackage();
         // 用于存储事件总线的唯一地址
-        Set<String> eventBusUniqueAddress = new HashSet<>();
-
-        // 遍历实现指定接口的类信息列表
-        for (ClassInfo classInfo : busHandlerClasses) {
-            // 获取类名
-            String className = classInfo.getName();
-            // 类名不以"Impl"结尾则继续遍历
-            if (className.endsWith("Impl")) {
-                continue;
+        final Set<String> eventBusUniqueAddress = new HashSet<>();
+        for (Class<?> aClass : classes) {
+            //判断类是否有指定注解,
+            if (aClass.isAnnotationPresent(UniqueAddress.class)) {
+                //获取注解对象
+                UniqueAddress uniqueAddress = aClass.getAnnotation(UniqueAddress.class);
+                //获取注解的值
+                String uniqueAddressVal = uniqueAddress.value();
+                if (eventBusUniqueAddress.contains(uniqueAddressVal)) {
+                    // 打印警告信息
+                    StaticLog.warn("注意EventBus接口和RabbitMq接口:");
+                    StaticLog.warn("接口定义类命名不带impl,并且类上必须添加UniqueAddress注解,标明地址路径");
+                    StaticLog.warn("项目启动会检查是否有重复的地址或者地址缺失");
+                    StaticLog.warn("最终实现消费或者服务提供方命名必须添加impl,检查会过滤末尾Impl文件");
+                    // 抛出唯一地址异常，提示类名和重复的地址
+                    StaticLog.error(aClass.getName() + "\n地址重复:" + uniqueAddress);
+                    throw new UniqueAddressException(aClass.getName() + "\n地址重复:" + uniqueAddress);
+                }
+                // 将唯一地址添加到事件总书唯一地址集合中
+                eventBusUniqueAddress.add(uniqueAddressVal);
             }
-
-            // 获取类上的注解信息
-            AnnotationInfoList annotationInfos = classInfo.getAnnotationInfo();
-            // 标记是否具有唯一地址注解
-            boolean hasUniqueAddress = false;
-            // 遍历类上的注解信息
-            for (AnnotationInfo annotationInfo : annotationInfos) {
-                // 如果注解名为"com.vertx.common.annotations.UniqueAddress"
-                if (annotationInfo.getName().equals("com.vertx.common.core.annotations.UniqueAddress")) {
-                    // 获取唯一地址
-                    String uniqueAddress = (String) annotationInfo.getParameterValues().getFirst().getValue();
-                    // 如果事件总书存在重复地址
-                    if (eventBusUniqueAddress.contains(uniqueAddress)) {
-                        // 打印警告信息
-                        StaticLog.warn("注意EventBus接口和RabbitMq接口:");
-                        StaticLog.warn("接口定义类命名不带impl,并且类上必须添加UniqueAddress注解,标明地址路径");
-                        StaticLog.warn("项目启动会检查是否有重复的地址或者地址缺失");
-                        StaticLog.warn("最终实现消费或者服务提供方命名必须添加impl,检查会过滤末尾Impl文件");
-                        // 抛出唯一地址异常，提示类名和重复的地址
-                        throw new UniqueAddressException(className + "\n地址重复:" + uniqueAddress);
-                    }
-                    // 将唯一地址添加到事件总书唯一地址集合中
-                    eventBusUniqueAddress.add(uniqueAddress);
-                    // 标记具有唯一地址注解
-                    hasUniqueAddress = true;
+            if (aClass.isAnnotationPresent(TableName.class)) {
+                // 检查数据库模型类是否有id字段
+                String idField = "id";
+                final Field field = ClassUtil.getDeclaredField(aClass, idField);
+                if (field == null) {
+                    StaticLog.warn("警告: 数据库模型类" + aClass.getName() + "没有名为\"" + idField + "\"的字段,请检查是否有误");
                 }
             }
-            // 如果类上没有唯一地址注解
-            if (!hasUniqueAddress) {
-                // 打印警告信息
-                StaticLog.warn("注意EventBus接口和RabbitMq接口:");
-                StaticLog.warn("接口定义类命名不带impl,并且类上必须添加UniqueAddress注解,标明地址路径");
-                StaticLog.warn("项目启动会检查是否有重复的地址或者地址缺失");
-                StaticLog.warn("最终实现消费或者服务提供方命名必须添加impl,检查会过滤末尾Impl文件");
-                // 抛出唯一地址异常，提示类名
-                throw new UniqueAddressException(className + "\n事件总线地址未设置");
-            }
         }
-        // 清空事件总线唯一地址集合
-        eventBusUniqueAddress.clear();
     }
-
 }

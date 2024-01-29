@@ -56,11 +56,5 @@
             <artifactId>hutool-log</artifactId>
             <version>${huTool.version}</version>
         </dependency>
-        <!--   类路径扫描器和模块扫描器     -->
-        <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>${classgraph.version}</version>
-        </dependency>
     </dependencies>
 </project>

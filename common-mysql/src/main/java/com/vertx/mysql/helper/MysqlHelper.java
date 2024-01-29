@@ -320,6 +320,9 @@ public class MysqlHelper {
             return null;
         }
         final String sql = buildSelectSql(clazz, where, fields, lastSql);
+        if (sql == null) {
+            return null;
+        }
         final RowSet<Row> rowRowSet;
         if (StrUtil.isBlank(lastSql)) {
             rowRowSet = await(mysqlClient.query(sql).execute());
@@ -417,6 +420,23 @@ public class MysqlHelper {
     private static <T> String buildSelectSql(Class<T> c, Condition where,
                                              List<String> columns,
                                              String lastSql) {
+        //检验columns是否都存在在c中
+        if (columns != null && !columns.isEmpty()) {
+            final Field[] declaredFields = c.getDeclaredFields();
+            for (String column : columns) {
+                boolean isHave = false;
+                for (Field declaredField : declaredFields) {
+                    if (underlineName(declaredField.getName()).equals(column)) {
+                        isHave = true;
+                        break;
+                    }
+                }
+                if (!isHave) {
+                    StaticLog.warn(">>>>>> select column: {} not exist in {}", column, c.getName());
+                    return null;
+                }
+            }
+        }
         List<org.jooq.Field<Object>> fieldList = new ArrayList<>(Arrays.stream(c.getDeclaredFields())
                 .map(field -> DSL.field(underlineName(field.getName()))).toList());
         if (columns != null && !columns.isEmpty()) {

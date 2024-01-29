@@ -13,6 +13,7 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
+        final long start = System.currentTimeMillis();
         try {
             new VertxLoadConfig().init("");
             // 初始化数据库连接
@@ -30,6 +31,7 @@ public class MainVerticle extends AbstractVerticle {
             Future.all(futures)
                     .onSuccess(aVoid -> {
                         StaticLog.info("部署成功");
+                        StaticLog.info("启动成功,耗时{}ms", System.currentTimeMillis() - start);
                         startPromise.complete();
                     })
                     .onFailure(throwable -> StaticLog.error(throwable, "部署失败"));

@@ -1,4 +1,21 @@
+###
+POST http://localhost:3020/api/example/v1/user/page
+Content-Type: application/json
+
+{
+    "page": 1,
+    "size": 2,
+    "sort":"id",
+    "order":"desc",
+    "condition": {
+        "likeRightName": "2"
+    }
+}
+
+###
 GET http://localhost:3020/api/example/v1/user/list
 Accept: application/json
 
 ###
+
+

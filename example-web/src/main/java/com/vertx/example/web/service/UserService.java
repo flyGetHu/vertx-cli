@@ -2,7 +2,10 @@ package com.vertx.example.web.service;
 
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.log.StaticLog;
+import com.vertx.common.core.entity.db.QueryPageParam;
+import com.vertx.common.core.entity.db.QueryPageResponse;
 import com.vertx.eventbus.bus.DemoBus;
+import com.vertx.example.web.entity.request.condition.UserPageCondition;
 import com.vertx.example.web.mapper.UserMapper;
 import com.vertx.example.web.model.User;
 
@@ -18,5 +21,9 @@ public class UserService {
         final String res = demoBus.call(user.getName());
         StaticLog.debug("res:{}", res);
         return userMapper.selectAll();
+    }
+
+    public QueryPageResponse<User> selectPage(QueryPageParam<UserPageCondition> param) {
+        return userMapper.selectPage(param);
     }
 }

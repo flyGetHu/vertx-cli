@@ -2,6 +2,8 @@ package com.vertx.mysql.helper;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.log.StaticLog;
+import com.vertx.common.core.entity.db.QueryPageParam;
+import com.vertx.common.core.entity.db.QueryPageResponse;
 import com.vertx.common.core.enums.EnvEnum;
 import com.vertx.common.core.utils.StrUtil;
 import io.vertx.mysqlclient.MySQLClient;
@@ -118,6 +120,39 @@ public class MysqlHelper {
     public static <T> List<T> select(Class<T> c, Condition where, String lastSql) {
         return selectDsl(c, where, null, lastSql);
     }
+
+    public static <T> QueryPageResponse<T> selectPage(Class<T> c, Condition where, QueryPageParam<?> queryPageParam) {
+        final Integer page = queryPageParam.getPage();
+        final Integer size = queryPageParam.getSize();
+        final String sort = queryPageParam.getSort();
+        final String order = queryPageParam.getOrder();
+        if (page == null || page < 1) {
+            StaticLog.warn(">>>>>> 查询页码不能为空或小于1");
+            return null;
+        }
+        if (size == null || size < 1) {
+            StaticLog.warn(">>>>>> 查询页大小不能为空或小于1");
+            return null;
+        }
+        if (StrUtil.isBlank(sort)) {
+            StaticLog.warn(">>>>>> 查询排序字段不能为空");
+            return null;
+        }
+        if (StrUtil.isBlank(order)) {
+            StaticLog.warn(">>>>>> 查询排序顺序不能为空");
+            return null;
+        }
+        final String lastSql = String.format("order by %s %s limit %d,%d", sort, order, (page - 1) * size, size);
+        final List<T> data = selectDsl(c, where, null, lastSql);
+        final Integer total = selectCount(c, where);
+        final QueryPageResponse<T> queryPageResponse = new QueryPageResponse<>();
+        queryPageResponse.setPage(page);
+        queryPageResponse.setSize(size);
+        queryPageResponse.setData(data);
+        queryPageResponse.setTotal(total);
+        return queryPageResponse;
+    }
+
 
     /**
      * 在事务中执行
@@ -410,6 +445,16 @@ public class MysqlHelper {
         }
         sql += ";";
         return sql;
+    }
+
+
+    private static <T> Integer selectCount(Class<T> c, Condition where) {
+        String sql = dslContext.selectCount().from(DSL.table(getTableName(c))).where(where).getSQL(ParamType.INLINED);
+        if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
+            StaticLog.debug("select count sql: {}", sql);
+        }
+        final RowSet<Row> rowRowSet = await(mysqlClient.query(sql).execute());
+        return rowRowSet.iterator().next().getInteger(0);
     }
 
     private static <T> String buildSelectSql(Class<T> c, Condition where,

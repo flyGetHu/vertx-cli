@@ -3,6 +3,7 @@ package webserver.helper;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.log.StaticLog;
 import com.vertx.common.core.entity.app.AppConfig;
+import com.vertx.common.core.utils.StrUtil;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
@@ -70,7 +71,14 @@ public class VertxWebHelper {
         // 初始化路由器
         options.initRouter.init(router);
         // 将路由器添加到主路由器
-        mainRouter.route(configWebServer.getPrefix()).subRouter(router);
+        final String webServerPrefix = configWebServer.getPrefix();
+        // 判断前缀是否为空,且是否以"/"开头,末尾以/*结尾
+        if (StrUtil.isBlank(webServerPrefix) || !webServerPrefix.startsWith("/") || !webServerPrefix.endsWith("/*")) {
+            StaticLog.error("webServerPrefix is error");
+            throw new webserver.exception.WebServerStartException("webServerPrefix is error");
+        }
+        StaticLog.info("Web服务请求前缀:{}", webServerPrefix);
+        mainRouter.route(webServerPrefix).subRouter(router);
         // 超时异常处理
         mainRouter.errorHandler(HttpStatus.HTTP_UNAVAILABLE, context -> {
             StaticLog.error(context.failure(), "接口超时:{}", context.request().path());

@@ -1,0 +1,5 @@
+# 测试
+GET http://localhost:3020/api/example/v1/test/hello
+Accept: application/json
+
+###

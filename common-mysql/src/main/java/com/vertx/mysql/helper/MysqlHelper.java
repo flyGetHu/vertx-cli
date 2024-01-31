@@ -323,12 +323,7 @@ public class MysqlHelper {
         if (sql == null) {
             return null;
         }
-        final RowSet<Row> rowRowSet;
-        if (StrUtil.isBlank(lastSql)) {
-            rowRowSet = await(mysqlClient.query(sql).execute());
-        } else {
-            rowRowSet = await(mysqlClient.query(sql + " " + lastSql + ";").execute());
-        }
+        final RowSet<Row> rowRowSet = await(mysqlClient.query(sql).execute());
         final List<T> list = new ArrayList<>(rowRowSet.size());
         for (Row row : rowRowSet) {
             list.add(row.toJson().mapTo(clazz));

@@ -1,0 +1,4 @@
+GET http://localhost:3020/api/example/v1/user/list
+Accept: application/json
+
+###

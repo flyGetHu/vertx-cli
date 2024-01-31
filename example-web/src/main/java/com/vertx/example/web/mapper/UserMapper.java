@@ -11,7 +11,7 @@ public class UserMapper {
 
     public List<User> selectAll() {
         final Condition noCondition = DSL.noCondition();
-        List<User> users = MysqlHelper.select(User.class, noCondition, List.of("name", "age"));
+        List<User> users = MysqlHelper.select(User.class, noCondition, List.of("name", "age"), "limit 10");
         return users;
     }
 

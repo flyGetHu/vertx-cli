@@ -114,7 +114,7 @@ public interface BusHandler<Request, Response> {
                 // 判断环境是否为非生产环境，并记录日志：RPC服务处理请求及返回响应
                 if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
                     final String requestJson = Json.encode(request);
-                    StaticLog.debug("RPC服务处理请求:{},请求参数,返回响应:{}", address, requestJson, responseJson);
+                    StaticLog.debug("RPC服务处理请求:{},请求参数:{},返回响应:{}", address, requestJson, responseJson);
                 }
             } catch (Exception e) {
                 // 记录日志：RPC服务处理请求失败，并返回错误信息

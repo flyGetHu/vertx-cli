@@ -95,7 +95,7 @@
     </appenders>
     <loggers>
         <!-- 默认显示方式 -->
-        <root level="info">
+        <root level="debug">
             <appender-ref ref="Console"/>
             <appender-ref ref="ErrLog"/>
             <appender-ref ref="WarnLog"/>

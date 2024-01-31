@@ -364,7 +364,7 @@ public class MysqlHelper {
 
         String sql = insertValuesStepN.getSQL(ParamType.INLINED);
         if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
-            StaticLog.info("insert sql: {}", sql);
+            StaticLog.debug("insert sql: {}", sql);
         }
         sql += ";";
         return sql;
@@ -397,7 +397,7 @@ public class MysqlHelper {
                 .where(where);
         String sql = updateConditionStep.getSQL(ParamType.INLINED);
         if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
-            StaticLog.info("update sql: {}", sql);
+            StaticLog.debug("update sql: {}", sql);
         }
         sql += ";";
         return sql;
@@ -406,7 +406,7 @@ public class MysqlHelper {
     private static String buildDeleteSql(Class<?> c, Condition where) {
         String sql = dslContext.deleteFrom(DSL.table(getTableName(c))).where(where).getSQL(ParamType.INLINED);
         if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
-            StaticLog.info("delete sql: {}", sql);
+            StaticLog.debug("delete sql: {}", sql);
         }
         sql += ";";
         return sql;
@@ -445,7 +445,7 @@ public class MysqlHelper {
         }
         sql += ";";
         if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
-            StaticLog.info("select sql: {}", sql);
+            StaticLog.debug("select sql: {}", sql);
         }
         return sql;
     }

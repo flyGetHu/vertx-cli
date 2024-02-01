@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.shareddata.Lock;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * A utility class that provides local locking functionality.
@@ -59,4 +60,60 @@ public class LockUtil {
         return lock;
     }
 
+    public static void withLock(String key, Runnable runnable) {
+        final Lock lock = tryLock(key);
+        if (lock != null) {
+            try {
+                runnable.run();
+            } finally {
+                lock.release();
+            }
+        } else {
+            StaticLog.error("withLock error", key);
+            throw new RuntimeException("withLock error");
+        }
+    }
+
+    public static <T> T withLock(String key, Supplier<T> supplier) {
+        final Lock lock = tryLock(key);
+        if (lock != null) {
+            try {
+                return supplier.get();
+            } finally {
+                lock.release();
+            }
+        } else {
+            StaticLog.error("withLock error", key);
+            throw new RuntimeException("withLock error");
+        }
+    }
+
+    public static void withLock(String key, long timeout, Runnable runnable) {
+        final Lock lock = tryLock(key, timeout);
+        if (lock != null) {
+            try {
+                runnable.run();
+            } finally {
+                lock.release();
+            }
+        } else {
+            StaticLog.error("withLock error", key);
+            throw new RuntimeException("withLock error");
+        }
+    }
+
+
+    public static <T> T withLock(String key, long timeout, Supplier<T> supplier) {
+        final Lock lock = tryLock(key, timeout);
+        if (lock != null) {
+            try {
+                return supplier.get();
+            } finally {
+                lock.release();
+            }
+        } else {
+            StaticLog.error("withLock error", key);
+            throw new RuntimeException("withLock error");
+        }
+    }
 }

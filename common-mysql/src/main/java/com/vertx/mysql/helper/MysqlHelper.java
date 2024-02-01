@@ -177,6 +177,7 @@ public class MysqlHelper {
             StaticLog.error(e, "事务执行失败");
             if (transaction != null) {
                 await(transaction.rollback());
+                StaticLog.error("事务已回滚");
             }
             throw e;
         } finally {
@@ -253,6 +254,7 @@ public class MysqlHelper {
             // 回滚事务
             if (!isHaveTransaction && transaction != null) {
                 await(transaction.rollback());
+                StaticLog.error("事务已回滚");
             }
             throw e;
         } finally {
@@ -321,6 +323,7 @@ public class MysqlHelper {
             // 回滚事务 如果外部传入了事务,则不需要回滚事务,由外部回滚事务
             if (!isHaveTransaction && transaction != null) {
                 await(transaction.rollback());
+                StaticLog.error("事务已回滚");
             }
             StaticLog.error(e, ">>>>>> 批量更新数据失败", lists);
             throw e;

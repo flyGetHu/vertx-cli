@@ -60,6 +60,12 @@ public class LockUtil {
         return lock;
     }
 
+    /**
+     * 在锁内执行提供的 Runnable。使用提供的密钥获取锁。
+     *
+     * @param key      与锁关联的键。
+     * @param runnable 在锁内执行的 Runnable。
+     */
     public static void withLock(String key, Runnable runnable) {
         final Lock lock = tryLock(key);
         if (lock != null) {
@@ -74,6 +80,14 @@ public class LockUtil {
         }
     }
 
+    /**
+     * 在锁内执行提供的供应商。使用提供的密钥获取锁。
+     *
+     * @param key      与锁关联的键。
+     * @param supplier 在锁内执行的供应商。
+     * @param <T>      supplier返回的结果类型。
+     * @return supplier返回的结果。
+     */
     public static <T> T withLock(String key, Supplier<T> supplier) {
         final Lock lock = tryLock(key);
         if (lock != null) {
@@ -88,6 +102,15 @@ public class LockUtil {
         }
     }
 
+    /**
+     * 使用指定的键和超时时间获取锁，并在锁定的情况下执行提供的 Runnable。
+     * 如果在指定的超时时间内无法获取锁，将抛出 RuntimeException。
+     *
+     * @param key      与锁关联的键。
+     * @param timeout  等待锁的最长时间（秒）。
+     * @param runnable 需要在锁定情况下执行的 Runnable。
+     * @throws RuntimeException 如果在指定的超时时间内无法获取锁。
+     */
     public static void withLock(String key, long timeout, Runnable runnable) {
         final Lock lock = tryLock(key, timeout);
         if (lock != null) {
@@ -103,6 +126,17 @@ public class LockUtil {
     }
 
 
+    /**
+     * 在锁内执行提供的供应商。使用提供的密钥和超时来获取锁定。
+     * 如果在指定的超时时间内无法获得锁，则抛出异常。
+     * 供应商预计返回 T 类型的结果。
+     *
+     * @param key      与锁关联的密钥。
+     * @param timeout  等待锁的最长时间（以秒为单位）。
+     * @param supplier 在锁内执行的供应商。
+     * @return supplier返回的结果。
+     * 如果在指定的超时时间内无法获得锁，则抛出 RuntimeException。
+     */
     public static <T> T withLock(String key, long timeout, Supplier<T> supplier) {
         final Lock lock = tryLock(key, timeout);
         if (lock != null) {

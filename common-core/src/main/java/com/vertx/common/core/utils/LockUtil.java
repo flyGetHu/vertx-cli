@@ -12,6 +12,8 @@ import java.util.function.Supplier;
  * A utility class that provides local locking functionality.
  * <p>
  * This class is thread-safe.
+ *
+ * @author huan
  */
 public class LockUtil {
 

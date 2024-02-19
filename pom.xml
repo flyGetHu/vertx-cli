@@ -31,6 +31,7 @@
     <junit-jupiter.version>5.9.1</junit-jupiter.version>
     <lombok.version>1.18.30</lombok.version>
     <jooq.version>3.19.1</jooq.version>
+    <huTool.version>5.8.25</huTool.version>
     <common.version>1.0-SNAPSHOT</common.version>
     <launcher.class>com.vertx.common.core.MainLaunch</launcher.class>
   </properties>

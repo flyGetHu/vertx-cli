@@ -12,7 +12,11 @@ class RandUtilTest {
     void testHashPassword() throws NoSuchAlgorithmException {
         String password = "password123";
         String hashedPasswordWithSalt = RandUtil.hashPassword(password);
-
+        String hashedPasswordWithSalt2 = RandUtil.hashPassword(password);
+        String hashedPasswordWithSalt3 = RandUtil.hashPassword(password);
+        System.out.println(hashedPasswordWithSalt);
+        System.out.println(hashedPasswordWithSalt2);
+        System.out.println(hashedPasswordWithSalt3);
         Assertions.assertNotNull(hashedPasswordWithSalt);
         Assertions.assertTrue(hashedPasswordWithSalt.contains("$"));
     }

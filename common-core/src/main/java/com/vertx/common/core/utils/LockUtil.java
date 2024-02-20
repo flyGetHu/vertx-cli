@@ -25,7 +25,7 @@ public class LockUtil {
      * @return 获得的锁，如果无法获得锁，则返回null
      */
     public static Lock tryLock(String key, long timeout) {
-        return tryLock(key, timeout, TimeUnit.SECONDS);
+        return tryLock(key, timeout, TimeUnit.SECONDS, false);
     }
 
     /**
@@ -34,12 +34,17 @@ public class LockUtil {
      * @param key     与锁关联的键
      * @param timeout 等待锁的最长时间
      * @param unit    超时参数的时间单位
+     * @param local   是否是本地锁
      * @return 获得的锁，如果在指定的超时内无法获得锁，则返回null
      */
-    public static Lock tryLock(String key, long timeout, TimeUnit unit) {
+    public static Lock tryLock(String key, long timeout, TimeUnit unit, Boolean local) {
         Lock lock = null;
         try {
-            lock = Future.await(VertxLoadConfig.sharedData.getLockWithTimeout(key, unit.toMillis(timeout)));
+            if (local) {
+                lock = Future.await(VertxLoadConfig.sharedData.getLocalLockWithTimeout(key, unit.toMillis(timeout)));
+            } else {
+                lock = Future.await(VertxLoadConfig.sharedData.getLockWithTimeout(key, unit.toMillis(timeout)));
+            }
         } catch (Exception e) {
             StaticLog.warn(e, "tryLock error");
         }
@@ -49,13 +54,18 @@ public class LockUtil {
     /**
      * 尝试获取指定键的锁。
      *
-     * @param key 与锁关联的键
+     * @param key   与锁关联的键
+     * @param local 是否是本地锁
      * @return 获得的锁，如果无法获得锁，则返回null
      */
-    public static Lock tryLock(String key) {
+    public static Lock tryLock(String key, Boolean local) {
         Lock lock = null;
         try {
-            lock = Future.await(VertxLoadConfig.sharedData.getLock(key));
+            if (local) {
+                lock = Future.await(VertxLoadConfig.sharedData.getLocalLock(key));
+            } else {
+                lock = Future.await(VertxLoadConfig.sharedData.getLock(key));
+            }
         } catch (Exception e) {
             StaticLog.warn(e, "getLock error");
         }
@@ -69,7 +79,7 @@ public class LockUtil {
      * @param runnable 在锁内执行的 Runnable。
      */
     public static void withLock(String key, Runnable runnable) {
-        final Lock lock = tryLock(key);
+        final Lock lock = tryLock(key, false);
         if (lock != null) {
             try {
                 runnable.run();
@@ -91,7 +101,7 @@ public class LockUtil {
      * @return supplier返回的结果。
      */
     public static <T> T withLock(String key, Supplier<T> supplier) {
-        final Lock lock = tryLock(key);
+        final Lock lock = tryLock(key, false);
         if (lock != null) {
             try {
                 return supplier.get();

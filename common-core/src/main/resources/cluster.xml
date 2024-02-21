@@ -36,22 +36,22 @@
         <backup-count>1</backup-count>
     </map>
     <!--   cp子系统保证集群使用分布式锁,分布式计数器和共享map等操作保证数据一致性     -->
-    <!--    <cp-subsystem>-->
-    <!--        &lt;!&ndash;   为了保证cp系统可用,可以启动 cp-member-count 个与业务无关的服务,维护cp系统最小成员    &ndash;&gt;-->
-    <!--        <cp-member-count>0</cp-member-count>-->
-    <!--        <group-size>0</group-size>-->
-    <!--        <session-time-to-live-seconds>30</session-time-to-live-seconds>-->
-    <!--        <session-heartbeat-interval-seconds>3</session-heartbeat-interval-seconds>-->
-    <!--        <missing-cp-member-auto-removal-seconds>360</missing-cp-member-auto-removal-seconds>-->
-    <!--        <fail-on-indeterminate-operation-state>true</fail-on-indeterminate-operation-state>-->
-    <!--        <semaphores>-->
-    <!--            <semaphore>-->
-    <!--                <name>__vertx.*</name>-->
-    <!--                <jdk-compatible>false</jdk-compatible>-->
-    <!--                <initial-permits>1</initial-permits>-->
-    <!--            </semaphore>-->
-    <!--        </semaphores>-->
-    <!--    </cp-subsystem>-->
+<!--    <cp-subsystem>-->
+<!--        &lt;!&ndash;   为了保证cp系统可用,可以启动 cp-member-count 个与业务无关的服务,维护cp系统最小成员    &ndash;&gt;-->
+<!--        <cp-member-count>3</cp-member-count>-->
+<!--        <group-size>3</group-size>-->
+<!--        <session-time-to-live-seconds>30</session-time-to-live-seconds>-->
+<!--        <session-heartbeat-interval-seconds>3</session-heartbeat-interval-seconds>-->
+<!--        <missing-cp-member-auto-removal-seconds>360</missing-cp-member-auto-removal-seconds>-->
+<!--        <fail-on-indeterminate-operation-state>true</fail-on-indeterminate-operation-state>-->
+<!--        <semaphores>-->
+<!--            <semaphore>-->
+<!--                <name>__vertx.*</name>-->
+<!--                <jdk-compatible>false</jdk-compatible>-->
+<!--                <initial-permits>1</initial-permits>-->
+<!--            </semaphore>-->
+<!--        </semaphores>-->
+<!--    </cp-subsystem>-->
 
     <properties>
         <property name="hazelcast.logging.type">log4j2</property>

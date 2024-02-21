@@ -1,19 +1,19 @@
 package com.vertx.common.core;
 
-import com.vertx.common.core.utils.RandUtil;
+import com.vertx.common.core.utils.PasswordUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
 
-class RandUtilTest {
+class PasswordUtilTest {
 
     @Test
     void testHashPassword() throws NoSuchAlgorithmException {
         String password = "password123";
-        String hashedPasswordWithSalt = RandUtil.hashPassword(password);
-        String hashedPasswordWithSalt2 = RandUtil.hashPassword(password);
-        String hashedPasswordWithSalt3 = RandUtil.hashPassword(password);
+        String hashedPasswordWithSalt = PasswordUtil.hashPassword(password);
+        String hashedPasswordWithSalt2 = PasswordUtil.hashPassword(password);
+        String hashedPasswordWithSalt3 = PasswordUtil.hashPassword(password);
         System.out.println(hashedPasswordWithSalt);
         System.out.println(hashedPasswordWithSalt2);
         System.out.println(hashedPasswordWithSalt3);
@@ -24,8 +24,8 @@ class RandUtilTest {
     @Test
     void testVerifyPassword() throws NoSuchAlgorithmException {
         String password = "password123";
-        String hashedPasswordWithSalt = RandUtil.hashPassword(password);
+        String hashedPasswordWithSalt = PasswordUtil.hashPassword(password);
 
-        Assertions.assertTrue(RandUtil.verifyPassword(password, hashedPasswordWithSalt));
+        Assertions.assertTrue(PasswordUtil.verifyPassword(password, hashedPasswordWithSalt));
     }
 }

@@ -8,7 +8,7 @@ import java.util.Base64;
 /**
  * Utility class for generating random values.
  */
-public class RandUtil {
+public class PasswordUtil {
     /**
      * 使用SHA-256算法对给定的密码进行哈希处理，并返回盐和哈希密码，
      * 编码为Base64字符串。

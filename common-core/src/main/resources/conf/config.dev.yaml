@@ -5,6 +5,10 @@ app: # 应用配置
 webServer: # web服务配置
   port: 3020 # 服务端口
   host: "0.0.0.0" # 服务绑定的ip
+  maxInitialLineLength: 8192
+  maxChunkSize: 4096
+  maxHeaderSize: 8192
+  maxFormAttributeSize: 8192
   alpnVersions: # 支持的协议版本
     - "HTTP_2"
     - "HTTP_1_1"

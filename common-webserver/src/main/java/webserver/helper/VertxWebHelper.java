@@ -44,6 +44,14 @@ public class VertxWebHelper {
         httpServerOptions.setCompressionSupported(configWebServer.isCompressionSupported());
         // 设置压缩级别
         httpServerOptions.setCompressionLevel(configWebServer.getCompressionLevel());
+        // 设置最大分片大小
+        httpServerOptions.setMaxChunkSize(configWebServer.getMaxChunkSize());
+        // 设置最大头大小
+        httpServerOptions.setMaxInitialLineLength(configWebServer.getMaxInitialLineLength());
+        // 设置最大表单属性大小
+        httpServerOptions.setMaxHeaderSize(configWebServer.getMaxHeaderSize());
+        // 设置最大表单属性大小
+        httpServerOptions.setMaxFormAttributeSize(configWebServer.getMaxFormAttributeSize());
         // 创建HTTP服务器
         final HttpServer httpServer = vertx.createHttpServer(httpServerOptions);
         // 创建路由器

@@ -20,7 +20,7 @@ import static com.vertx.common.core.config.VertxLoadConfig.vertx;
 import static io.vertx.core.Future.await;
 
 public class LanguageHelper {
-    private final Map<String, LanguageData> languageDataMap = new java.util.HashMap<>();
+    private static final Map<String, LanguageData> languageDataMap = new java.util.HashMap<>();
 
     /**
      * 根据提供的名称和语言类型检索特定于语言的字符串。
@@ -30,7 +30,7 @@ public class LanguageHelper {
      * @param args             用于字符串格式化的可选参数。
      * @return 特定于语言的字符串，如果未找到语言数据，则返回名称本身。
      */
-    public String getLanguageString(String name, LanguageTypeEnum languageTypeEnum, String... args) {
+    public static String getLanguageString(String name, LanguageTypeEnum languageTypeEnum, String... args) {
         if (languageDataMap.isEmpty()) {
             final String filePath = "i18/language.json";
             if (!await(vertx.fileSystem().exists(filePath))) {
@@ -82,7 +82,7 @@ public class LanguageHelper {
      * @return 与“Accept-Language”标头值对应的 LanguageTypeEnum。
      * 如果标头不存在或与任何支持的语言类型不匹配，则默认值为 LanguageTypeEnum.ZH。
      */
-    public LanguageTypeEnum getLanguageType(RoutingContext context) {
+    public static LanguageTypeEnum getLanguageType(RoutingContext context) {
         final String languageHeader = context.request().getHeader("Accept-Language");
         String header = StrUtil.isBlank(languageHeader) ? LanguageTypeEnum.ZH.name() : languageHeader;
         return switch (header) {

@@ -32,6 +32,8 @@
     <lombok.version>1.18.30</lombok.version>
     <jooq.version>3.19.1</jooq.version>
     <huTool.version>5.8.25</huTool.version>
+    <hibernate.version>8.0.1.Final</hibernate.version>
+    <jakarta.el.version>4.0.2</jakarta.el.version>
     <common.version>1.0-SNAPSHOT</common.version>
     <launcher.class>com.vertx.common.core.MainLaunch</launcher.class>
   </properties>

@@ -67,12 +67,12 @@ public class LanguageHelper {
             }
         }
         if (languageDataMap.isEmpty()) {
-            System.err.println("language.json 文件为空,无法获取语言信息");
+            StaticLog.warn("language.json 文件为空,无法获取语言信息");
             return name;
         }
         LanguageData languageData = languageDataMap.get(name);
         if (languageData == null) {
-            System.err.println("language.json 文件中不存在 name 为" + name + "的语言信息,请补充");
+            StaticLog.warn("language.json 文件中不存在 name 为" + name + "的语言信息,请补充");
             return name;
         }
         String msg = switch (languageTypeEnum.name().toLowerCase()) {

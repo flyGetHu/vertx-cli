@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum SharedLockSharedLockEnum  implements ISharedLockSharedLockEnum {
+    INIT_LANGUAGE("init_language"),
     USER("user_{}");
 
     private String key;

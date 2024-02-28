@@ -3,8 +3,6 @@ package webserver.helper;
 import cn.hutool.log.StaticLog;
 import com.vertx.common.core.entity.language.LanguageData;
 import com.vertx.common.core.enums.LanguageTypeEnum;
-import com.vertx.common.core.enums.SharedLockSharedLockEnum;
-import com.vertx.common.core.helper.SharedLockHelper;
 import com.vertx.common.core.utils.StrUtil;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
@@ -14,12 +12,23 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.vertx.common.core.config.VertxLoadConfig.vertx;
 import static io.vertx.core.Future.await;
 
+/**
+ * LanguageHelper 类提供了根据给定名称和语言类型检索特定于语言的字符串的方法。
+ * 它还提供了一种根据所提供的 RoutingContext 的“Accept-Language”标头确定语言类型的方法。
+ * 当类加载到 JVM 中时，语言数据会从“language.json”文件加载。
+ * 加载的数据存储在静态地图中，以便高效检索。
+ * 如果“language.json”文件不存在或为空，将记录警告，并且提供的名称将作为语言字符串返回。
+ * 如果语言数据中不存在名称，则会记录警告，并且提供的名称将作为语言字符串返回。
+ */
 public class LanguageHelper {
+
+    /**
+     * 语言数据的静态数据
+     */
     private static final Map<String, LanguageData> languageDataMap = new java.util.HashMap<>();
 
     /**
@@ -38,10 +47,10 @@ public class LanguageHelper {
                 return name;
             }
             // 添加锁 防止多次读取文件
-            SharedLockHelper.withLockWithTimeout(SharedLockSharedLockEnum.INIT_LANGUAGE, TimeUnit.SECONDS.toMillis(6), new String[]{}, () -> {
-                if (languageDataMap.isEmpty()) {
-                    final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
-                    final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, 1024 * 1024));
+            if (languageDataMap.isEmpty()) {
+                final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
+                final Long fileSize = await(asyncFile.size());
+                final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
                     final JsonArray languageDataList = buffer.toJsonArray();
                     final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
                     for (Object item : languageDataList) {
@@ -56,7 +65,6 @@ public class LanguageHelper {
                     }
                     await(asyncFile.close());
                 }
-            });
         }
         if (languageDataMap.isEmpty()) {
             System.err.println("language.json 文件为空,无法获取语言信息");

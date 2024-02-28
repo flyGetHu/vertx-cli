@@ -137,22 +137,22 @@ public class AppConfig {
         /**
          * 最大初始行长度
          */
-        private int maxInitialLineLength;
+        private int maxInitialLineLength = 4096;
 
         /**
          * 最大块大小
          */
-        private int maxChunkSize;
+        private int maxChunkSize = 8192;
 
         /**
          * 最大表头大小
          */
-        private int maxHeaderSize;
+        private int maxHeaderSize = 8192;
 
         /**
          * 最大表单属性大小
          */
-        private int maxFormAttributeSize;
+        private int maxFormAttributeSize = 8192;
     }
 
     @Data

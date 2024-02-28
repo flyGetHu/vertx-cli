@@ -51,20 +51,20 @@ public class LanguageHelper {
                 final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
                 final Long fileSize = await(asyncFile.size());
                 final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
-                    final JsonArray languageDataList = buffer.toJsonArray();
-                    final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
-                    for (Object item : languageDataList) {
-                        final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
-                        final String key = languageData.getName();
-                        if (!languageDataMapUnique.containsKey(key)) {
-                            languageDataMapUnique.put(key, 1);
-                        } else {
-                            StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
-                        }
-                        languageDataMap.put(key, languageData);
+                final JsonArray languageDataList = buffer.toJsonArray();
+                final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
+                for (Object item : languageDataList) {
+                    final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
+                    final String key = languageData.getName();
+                    if (!languageDataMapUnique.containsKey(key)) {
+                        languageDataMapUnique.put(key, 1);
+                    } else {
+                        StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
                     }
-                    await(asyncFile.close());
+                    languageDataMap.put(key, languageData);
                 }
+                await(asyncFile.close());
+            }
         }
         if (languageDataMap.isEmpty()) {
             System.err.println("language.json 文件为空,无法获取语言信息");

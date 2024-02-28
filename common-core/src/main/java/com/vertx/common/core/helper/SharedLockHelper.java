@@ -26,9 +26,8 @@ public class SharedLockHelper {
      * @param sharedLockEnum 锁枚举
      * @param block          业务代码块
      * @param args           锁参数
-     * @throws Exception 异常
      */
-    public static void withLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args, Runnable block) throws Exception {
+    public static void withLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args, Runnable block) {
         Lock lock = getLock(sharedLockEnum, args);
         try {
             block.run();

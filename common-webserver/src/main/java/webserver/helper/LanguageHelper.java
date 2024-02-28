@@ -3,6 +3,8 @@ package webserver.helper;
 import cn.hutool.log.StaticLog;
 import com.vertx.common.core.entity.language.LanguageData;
 import com.vertx.common.core.enums.LanguageTypeEnum;
+import com.vertx.common.core.enums.SharedLockSharedLockEnum;
+import com.vertx.common.core.helper.SharedLockHelper;
 import com.vertx.common.core.utils.StrUtil;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
@@ -48,22 +50,24 @@ public class LanguageHelper {
             }
             // 添加锁 防止多次读取文件
             if (languageDataMap.isEmpty()) {
-                final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
-                final Long fileSize = await(asyncFile.size());
-                final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
-                final JsonArray languageDataList = buffer.toJsonArray();
-                final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
-                for (Object item : languageDataList) {
-                    final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
-                    final String key = languageData.getName();
-                    if (!languageDataMapUnique.containsKey(key)) {
-                        languageDataMapUnique.put(key, 1);
-                    } else {
-                        StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
+                SharedLockHelper.withLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null, () -> {
+                    final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
+                    final Long fileSize = await(asyncFile.size());
+                    final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
+                    final JsonArray languageDataList = buffer.toJsonArray();
+                    final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
+                    for (Object item : languageDataList) {
+                        final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
+                        final String key = languageData.getName();
+                        if (!languageDataMapUnique.containsKey(key)) {
+                            languageDataMapUnique.put(key, 1);
+                        } else {
+                            StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
+                        }
+                        languageDataMap.put(key, languageData);
                     }
-                    languageDataMap.put(key, languageData);
-                }
-                await(asyncFile.close());
+                    await(asyncFile.close());
+                });
             }
         }
         if (languageDataMap.isEmpty()) {

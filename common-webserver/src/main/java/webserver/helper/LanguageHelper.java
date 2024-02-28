@@ -84,6 +84,18 @@ public class LanguageHelper {
     }
 
     /**
+     * 根据提供的名称和 RoutingContext 的“Accept-Language”标头检索特定于语言的字符串。
+     *
+     * @param name    字符串的名称。
+     * @param context 表示传入 HTTP 请求的 RoutingContext 对象。
+     * @param args    用于字符串格式化的可选参数。
+     * @return 特定于语言的字符串，如果未找到语言数据，则返回名称本身。
+     */
+    public static String getLanguageString(RoutingContext context, String name, String... args) {
+        return getLanguageString(name, getLanguageType(context), args);
+    }
+
+    /**
      * 根据提供的 RoutingContext 的“Accept-Language”标头检索语言类型。
      *
      * @param context 表示传入 HTTP 请求的 RoutingContext 对象。

@@ -9,6 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <version>${common.version}</version>
     <artifactId>common-webserver</artifactId>
 
     <properties>

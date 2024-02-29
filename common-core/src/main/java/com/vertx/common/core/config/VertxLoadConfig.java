@@ -77,9 +77,11 @@ public class VertxLoadConfig {
         if (StrUtil.isNotBlank(VertxLoadConfig.active)) {
             env = VertxLoadConfig.active;
         }
+        // 判断环境变量是否为空,为空则默认为dev
         if (StrUtil.isBlank(env)) {
             env = "dev";
         }
+        // 拼接配置文件名
         activeConfigName += env + ".yaml";
 
         // 判断项目外部根目录是否存在

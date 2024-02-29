@@ -74,28 +74,28 @@ public class VertxWebHelper {
         httpServerOptions.setCompressionLevel(compressionLevel);
         // 设置最大分片大小
         final int maxChunkSize = configWebServer.getMaxChunkSize();
-        if (maxChunkSize < 0) {
+        if (maxChunkSize <= 0) {
             StaticLog.error("webServer maxChunkSize is error, maxChunkSize:{}", maxChunkSize);
             throw new webserver.exception.WebServerStartException("webServer maxChunkSize is error,maxChunkSize>0");
         }
         httpServerOptions.setMaxChunkSize(maxChunkSize);
         // 设置最大头大小
         final int maxInitialLineLength = configWebServer.getMaxInitialLineLength();
-        if (maxInitialLineLength < 0) {
+        if (maxInitialLineLength <= 0) {
             StaticLog.error("webServer maxInitialLineLength is error, maxInitialLineLength:{}", maxInitialLineLength);
             throw new webserver.exception.WebServerStartException("webServer maxInitialLineLength is error,maxInitialLineLength>0");
         }
         httpServerOptions.setMaxInitialLineLength(maxInitialLineLength);
         // 设置最大表单属性大小
         final int maxHeaderSize = configWebServer.getMaxHeaderSize();
-        if (maxHeaderSize < 0) {
+        if (maxHeaderSize <= 0) {
             StaticLog.error("webServer maxHeaderSize is error, maxHeaderSize:{}", maxHeaderSize);
             throw new webserver.exception.WebServerStartException("webServer maxHeaderSize is error,maxHeaderSize>0");
         }
         httpServerOptions.setMaxHeaderSize(maxHeaderSize);
         // 设置最大表单属性大小
         final int maxFormAttributeSize = configWebServer.getMaxFormAttributeSize();
-        if (maxFormAttributeSize < 0) {
+        if (maxFormAttributeSize <= 0) {
             StaticLog.error("webServer maxFormAttributeSize is error, maxFormAttributeSize:{}", maxFormAttributeSize);
             throw new webserver.exception.WebServerStartException("webServer maxFormAttributeSize is error,maxFormAttributeSize>0");
         }

@@ -56,21 +56,49 @@ public class RabbitMqClient {
         // 设置虚拟主机
         rabbitMQOptions.setVirtualHost(virtualHost);
         // 设置连接超时时间
-        rabbitMQOptions.setConnectionTimeout(config.getConnectionTimeout());
+        final int connectionTimeout = config.getConnectionTimeout();
+        if (connectionTimeout <= 0) {
+            StaticLog.error("rabbitmq connectionTimeout is null");
+            throw new RabbitMqClientInitException("rabbitmq connectionTimeout is null");
+        }
+        rabbitMQOptions.setConnectionTimeout(connectionTimeout);
         // 设置请求心跳时间
-        rabbitMQOptions.setRequestedHeartbeat(config.getRequestedHeartbeat());
+        final int requestedHeartbeat = config.getRequestedHeartbeat();
+        if (requestedHeartbeat <= 0) {
+            StaticLog.error("rabbitmq requestedHeartbeat is null");
+            throw new RabbitMqClientInitException("rabbitmq requestedHeartbeat is null");
+        }
+        rabbitMQOptions.setRequestedHeartbeat(requestedHeartbeat);
         // 设置心跳超时时间
-        rabbitMQOptions.setHandshakeTimeout(config.getHandshakeTimeout());
+        final int handshakeTimeout = config.getHandshakeTimeout();
+        if (handshakeTimeout <= 0) {
+            StaticLog.error("rabbitmq handshakeTimeout is null");
+            throw new RabbitMqClientInitException("rabbitmq handshakeTimeout is null");
+        }
+        rabbitMQOptions.setHandshakeTimeout(handshakeTimeout);
         // 设置自动重连
         rabbitMQOptions.setAutomaticRecoveryEnabled(config.getAutomaticRecoveryEnabled());
         // 设置重连次数
-        rabbitMQOptions.setReconnectAttempts(config.getReconnectAttempts());
+        final int reconnectAttempts = config.getReconnectAttempts();
+        if (reconnectAttempts <= 0) {
+            StaticLog.error("rabbitmq reconnectAttempts is null");
+            throw new RabbitMqClientInitException("rabbitmq reconnectAttempts is null");
+        }
+        rabbitMQOptions.setReconnectAttempts(reconnectAttempts);
         // 重连间隔时间
-        rabbitMQOptions.setNetworkRecoveryInterval(config.getNetworkRecoveryInterval());
+        final int networkRecoveryInterval = config.getNetworkRecoveryInterval();
+        if (networkRecoveryInterval <= 0) {
+            StaticLog.error("rabbitmq networkRecoveryInterval is null");
+            throw new RabbitMqClientInitException("rabbitmq networkRecoveryInterval is null");
+        }
+        rabbitMQOptions.setNetworkRecoveryInterval(networkRecoveryInterval);
         // 请求通道最大数
-        rabbitMQOptions.setRequestedChannelMax(config.getRequestedChannelMax());
-        // 请求心跳超时时间
-        rabbitMQOptions.setRequestedHeartbeat(config.getRequestedHeartbeat());
+        final int requestedChannelMax = config.getRequestedChannelMax();
+        if (requestedChannelMax <= 0) {
+            StaticLog.error("rabbitmq requestedChannelMax is null");
+            throw new RabbitMqClientInitException("rabbitmq requestedChannelMax is null");
+        }
+        rabbitMQOptions.setRequestedChannelMax(requestedChannelMax);
 
         final RabbitMQClient rabbitMQClient = RabbitMQClient.create(vertx, rabbitMQOptions);
         Future.await(rabbitMQClient.start());

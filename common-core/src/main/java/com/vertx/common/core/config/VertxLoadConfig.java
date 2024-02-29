@@ -17,6 +17,7 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.SharedData;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,9 +69,10 @@ public class VertxLoadConfig {
         final LogFactory logFactory = Log4j2LogFactory.create();
         LogFactory.setCurrentLogFactory(logFactory);
         StaticLog.info("初始化日志对象成功:{}", logFactory.getName());
-
+        // 获取当前项目的绝对路径
+        final String path = System.getProperty("user.dir");
         // 构建配置文件名
-        String activeConfigName = "conf/config.";
+        String activeConfigName = path + File.separator + "config.";
         String env = active;
         if (StrUtil.isNotBlank(VertxLoadConfig.active)) {
             env = VertxLoadConfig.active;
@@ -80,10 +82,15 @@ public class VertxLoadConfig {
         }
         activeConfigName += env + ".yaml";
 
-        // 判断配置文件是否存在
+        // 判断项目外部根目录是否存在
         if (!await(vertx.fileSystem().exists(activeConfigName))) {
-            StaticLog.warn("配置文件不存在:{}", activeConfigName);
-            return;
+            StaticLog.warn("项目外部配置文件不存在:{},尝试读取内部配置文件", activeConfigName);
+            // 判断项目内部配置文件是否存在
+            activeConfigName = "conf/config." + env + ".yaml";
+            if (!await(vertx.fileSystem().exists(activeConfigName))) {
+                StaticLog.error("项目内部配置文件不存在:{}", activeConfigName);
+                throw new RuntimeException("项目内部配置文件不存在:" + activeConfigName);
+            }
         }
 
         // 将环境变量设置为当前活跃配置

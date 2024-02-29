@@ -35,7 +35,9 @@ public class RedisClient {
             throw new RedisInitException("Redis database is null");
         }
         final String password = config.getPassword();
-        options.setPassword(password);
+        if (StrUtil.isNotBlank(password)) {
+            options.setPassword(password);
+        }
         options.setMaxPoolSize(config.getMaxPoolSize());
         options.setMaxPoolWaiting(config.getMaxWaitQueueSize());
         final String url = StrUtil.format("redis://{}:{}/{}", host, port, database);

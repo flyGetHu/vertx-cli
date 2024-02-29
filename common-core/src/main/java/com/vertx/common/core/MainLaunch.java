@@ -75,14 +75,9 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
     public void beforeStartingVertx(VertxOptions vertxOptions) {
         StaticLog.info("执行钩子函数:{}", "beforeStartingVertx");
         //创建Vertx实例时启用本机传输选项：
-        //vertxOptions.setPreferNativeTransport(true);
+        vertxOptions.setPreferNativeTransport(true);
         // 加载配置文件
         final Config config = ConfigUtil.loadConfig();
-        //        // 设置CP子系统配置
-        //        final CPSubsystemConfig cpSubsystemConfig = new CPSubsystemConfig();
-        //        // 设置CP成员节点数量
-        //        cpSubsystemConfig.setCPMemberCount(0);
-        //        config.setCPSubsystemConfig(cpSubsystemConfig);
         // 获取网络配置
         final NetworkConfig networkConfig = config.getNetworkConfig();
         // 获取Join配置

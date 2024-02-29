@@ -13,10 +13,11 @@ webServer: # web服务配置
   logEnabled: false # 是否开启日志
   compressionSupported: true # 是否支持压缩
   compressionLevel: 6 # 压缩级别
-  maxInitialLineLength: 8192
-  maxChunkSize: 4096
-  maxHeaderSize: 8192
-  maxFormAttributeSize: 8192
+  maxInitialLineLength: 8192 # 最大初始行长度
+  maxChunkSize: 4096 # 最大块大小
+  maxHeaderSize: 8192 # 最大头大小
+  maxFormAttributeSize: 8192 # 最大表单属性大小
+  registerWebSocketWriteHandlers: true # 是否注册websocket写处理程序
   ignorePaths: # 忽略的路径
     - "/api/example/health"
 

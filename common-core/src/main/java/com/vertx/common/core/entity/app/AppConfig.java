@@ -109,6 +109,11 @@ public class AppConfig {
          * ALPN版本列表
          */
         private List<HttpVersion> alpnVersions = List.of(HttpVersion.HTTP_2, HttpVersion.HTTP_1_1);
+
+        /**
+         * 是否注册WebSocket写处理程序
+         */
+        private boolean registerWebSocketWriteHandlers = false;
         /**
          * 服务器路径前缀
          */

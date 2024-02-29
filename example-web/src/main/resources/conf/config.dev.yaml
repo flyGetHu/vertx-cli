@@ -17,6 +17,7 @@ webServer: # web服务配置
   maxChunkSize: 4096 # 最大块大小
   maxHeaderSize: 8192 # 最大头大小
   maxFormAttributeSize: 8192 # 最大表单属性大小
+  registerWebSocketWriteHandlers: true # 是否注册websocket写处理程序
   ignorePaths: # 忽略的路径
     - "/api/example/health"
 

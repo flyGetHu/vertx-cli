@@ -43,32 +43,7 @@ public class LanguageHelper {
      */
     public static String getLanguageString(String name, LanguageTypeEnum languageTypeEnum, String... args) {
         if (languageDataMap.isEmpty()) {
-            final String filePath = "i18/language.json";
-            if (!await(vertx.fileSystem().exists(filePath))) {
-                StaticLog.warn("language.json文件不存在,无法获取语言信息");
-                return name;
-            }
-            // 添加锁 防止多次读取文件
-            if (languageDataMap.isEmpty()) {
-                SharedLockHelper.withLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null, () -> {
-                    final AsyncFile asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
-                    final Long fileSize = await(asyncFile.size());
-                    final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
-                    final JsonArray languageDataList = buffer.toJsonArray();
-                    final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
-                    for (Object item : languageDataList) {
-                        final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
-                        final String key = languageData.getName();
-                        if (!languageDataMapUnique.containsKey(key)) {
-                            languageDataMapUnique.put(key, 1);
-                        } else {
-                            StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
-                        }
-                        languageDataMap.put(key, languageData);
-                    }
-                    await(asyncFile.close());
-                });
-            }
+            if (!loadConfigFile()) return name;
         }
         if (languageDataMap.isEmpty()) {
             StaticLog.warn("language.json 文件为空,无法获取语言信息");
@@ -85,6 +60,47 @@ public class LanguageHelper {
             default -> languageData.getEn();
         };
         return StrUtil.format(msg, args);
+    }
+
+    /**
+     * 加载语言配置文件
+     *
+     * @return 是否加载成功
+     */
+    private static boolean loadConfigFile() {
+        final String filePath = "i18/language.json";
+        if (!await(vertx.fileSystem().exists(filePath))) {
+            StaticLog.warn("language.json文件不存在,无法获取语言信息");
+            return false;
+        }
+        // 添加锁 防止多次读取文件
+        SharedLockHelper.withLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null, () -> {
+            if (languageDataMap.isEmpty()) {
+                AsyncFile asyncFile = null;
+                try {
+                    asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
+                    final Long fileSize = await(asyncFile.size());
+                    final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
+                    final JsonArray languageDataList = buffer.toJsonArray();
+                    final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
+                    for (Object item : languageDataList) {
+                        final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
+                        final String key = languageData.getName();
+                        if (!languageDataMapUnique.containsKey(key)) {
+                            languageDataMapUnique.put(key, 1);
+                        } else {
+                            StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
+                        }
+                        languageDataMap.put(key, languageData);
+                    }
+                } finally {
+                    if (asyncFile != null) {
+                        await(asyncFile.close());
+                    }
+                }
+            }
+        });
+        return true;
     }
 
     /**

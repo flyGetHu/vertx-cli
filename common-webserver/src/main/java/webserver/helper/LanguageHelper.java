@@ -70,10 +70,6 @@ public class LanguageHelper {
      */
     private static boolean loadConfigFile() {
         final String filePath = "i18/language.json";
-        if (!await(vertx.fileSystem().exists(filePath))) {
-            StaticLog.warn("language.json文件不存在,无法获取语言信息");
-            return false;
-        }
         // 添加锁 防止多次读取文件
         final Lock localLock = SharedLockHelper.getLocalLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null);
         try {
@@ -82,6 +78,10 @@ public class LanguageHelper {
             }
             AsyncFile asyncFile = null;
             try {
+                if (!await(vertx.fileSystem().exists(filePath))) {
+                    StaticLog.warn("language.json文件不存在,无法获取语言信息");
+                    return false;
+                }
                 asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
                 final Long fileSize = await(asyncFile.size());
                 final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));

@@ -15,7 +15,7 @@ public class MainVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) throws Exception {
         final long start = System.currentTimeMillis();
         try {
-            new VertxLoadConfig().init("");
+            new VertxLoadConfig().init("huan");
             // 初始化数据库连接
             new MysqlClient().init(VertxLoadConfig.appConfig.getDatabase().getMysql(), true);
             new RabbitMqClient().init(VertxLoadConfig.appConfig.getMq().getRabbitmq(), true);
@@ -23,7 +23,7 @@ public class MainVerticle extends AbstractVerticle {
             final DeploymentOptions deploymentOptions = new DeploymentOptions();
             deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
             // 获取可使用逻辑核心
-            deploymentOptions.setInstances(1);
+            deploymentOptions.setInstances(16);
             final List<Future<String>> futures = List.of(
                     vertx.deployVerticle(WebVerticle.class.getName(), deploymentOptions),
                     vertx.deployVerticle(BusVerticle.class.getName(), deploymentOptions),

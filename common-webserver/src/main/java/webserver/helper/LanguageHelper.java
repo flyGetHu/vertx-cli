@@ -11,6 +11,7 @@ import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.shareddata.Lock;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Map;
@@ -74,32 +75,36 @@ public class LanguageHelper {
             return false;
         }
         // 添加锁 防止多次读取文件
-        SharedLockHelper.withLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null, () -> {
-            if (languageDataMap.isEmpty()) {
-                AsyncFile asyncFile = null;
-                try {
-                    asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
-                    final Long fileSize = await(asyncFile.size());
-                    final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
-                    final JsonArray languageDataList = buffer.toJsonArray();
-                    final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
-                    for (Object item : languageDataList) {
-                        final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
-                        final String key = languageData.getName();
-                        if (!languageDataMapUnique.containsKey(key)) {
-                            languageDataMapUnique.put(key, 1);
-                        } else {
-                            StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
-                        }
-                        languageDataMap.put(key, languageData);
+        final Lock localLock = SharedLockHelper.getLocalLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null);
+        try {
+            if (!languageDataMap.isEmpty()) {
+                return true;
+            }
+            AsyncFile asyncFile = null;
+            try {
+                asyncFile = await(vertx.fileSystem().open(filePath, new OpenOptions().setRead(true)));
+                final Long fileSize = await(asyncFile.size());
+                final Buffer buffer = await(asyncFile.read(Buffer.buffer(), 0, 0, Math.toIntExact(fileSize)));
+                final JsonArray languageDataList = buffer.toJsonArray();
+                final Map<String, Integer> languageDataMapUnique = new java.util.HashMap<>();
+                for (Object item : languageDataList) {
+                    final LanguageData languageData = Json.decodeValue(item.toString(), LanguageData.class);
+                    final String key = languageData.getName();
+                    if (!languageDataMapUnique.containsKey(key)) {
+                        languageDataMapUnique.put(key, 1);
+                    } else {
+                        StaticLog.warn("language.json文件中存在重复的name为{}的语言信息,请检查");
                     }
-                } finally {
-                    if (asyncFile != null) {
-                        await(asyncFile.close());
-                    }
+                    languageDataMap.put(key, languageData);
+                }
+            } finally {
+                if (asyncFile != null) {
+                    await(asyncFile.close());
                 }
             }
-        });
+        } finally {
+            localLock.release();
+        }
         return true;
     }
 

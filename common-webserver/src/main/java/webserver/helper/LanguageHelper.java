@@ -43,9 +43,7 @@ public class LanguageHelper {
      * @return 特定于语言的字符串，如果未找到语言数据，则返回名称本身。
      */
     public static String getLanguageString(String name, LanguageTypeEnum languageTypeEnum, String... args) {
-        if (languageDataMap.isEmpty()) {
-            if (!loadConfigFile()) return name;
-        }
+        if (!loadConfigFile()) return name;
         if (languageDataMap.isEmpty()) {
             StaticLog.warn("language.json 文件为空,无法获取语言信息");
             return name;
@@ -69,6 +67,9 @@ public class LanguageHelper {
      * @return 是否加载成功
      */
     private static boolean loadConfigFile() {
+        if (!languageDataMap.isEmpty()) {
+            return true;
+        }
         final String filePath = "i18/language.json";
         if (!await(vertx.fileSystem().exists(filePath))) {
             StaticLog.warn("language.json文件不存在,无法获取语言信息");
@@ -77,6 +78,7 @@ public class LanguageHelper {
         // 添加锁 防止多次读取文件
         final Lock localLock = SharedLockHelper.getLocalLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null);
         try {
+            // 再次检查，防止在等待锁的过程中，其他线程已经加载了配置文件
             if (!languageDataMap.isEmpty()) {
                 return true;
             }

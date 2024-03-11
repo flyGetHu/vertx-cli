@@ -136,15 +136,20 @@ public class VertxWebHelper {
     }
     StaticLog.info("Web服务请求前缀:{}", webServerPrefix);
     mainRouter.route(webServerPrefix).subRouter(router);
-    // 504超时异常处理
-    mainRouter.errorHandler(504, context -> {
-      StaticLog.error(context.failure(), "接口超时:{}", context.request().path());
-      context.end(errorResponse(504, "接口超时,请联系管理员!"));
-    });
     // 400异常处理
     mainRouter.errorHandler(400, context -> {
-      StaticLog.error(context.failure(), "接口参数错误:{}", context.request().path());
-      context.end(errorResponse(400, "接口参数错误,请联系管理员!"));
+      StaticLog.error(context.failure(), "接口请求错误:{}", context.request().path());
+      context.end(errorResponse(400, "接口请求错误,请联系管理员!"));
+    });
+    // 401 Unauthorized：当请求需要用户验证时返回。如果请求已包含验证凭据，则表示认证失败。
+    mainRouter.errorHandler(401, context -> {
+      StaticLog.error(context.failure(), "接口未授权:{}", context.request().path());
+      context.end(errorResponse(401, "接口未授权,请联系管理员!"));
+    });
+    // 403 Forbidden：服务器已经理解请求，但是拒绝执行它
+    mainRouter.errorHandler(403, context -> {
+      StaticLog.error(context.failure(), "接口禁止访问:{}", context.request().path());
+      context.end(errorResponse(403, "接口禁止访问,请联系管理员!"));
     });
     // 404异常处理
     mainRouter.errorHandler(404, context -> {
@@ -153,8 +158,23 @@ public class VertxWebHelper {
     });
     // 405异常处理
     mainRouter.errorHandler(405, context -> {
-      StaticLog.error(context.failure(), "接口不支持:{}", context.request().path());
-      context.end(errorResponse(405, "接口不支持,请联系管理员!"));
+      StaticLog.error(context.failure(), "接口不允许:{}", context.request().path());
+      context.end(errorResponse(405, "接口不允许,请联系管理员!"));
+    });
+    // 406 Not Acceptable：服务器无法根据客户端请求的内容特性完成请求。
+    mainRouter.errorHandler(406, context -> {
+      StaticLog.error(context.failure(), "接口不可接受:{}", context.request().path());
+      context.end(errorResponse(406, "接口不可接受,请联系管理员!"));
+    });
+    // 413异常处理
+    mainRouter.errorHandler(413, context -> {
+      StaticLog.error(context.failure(), "接口请求过大:{}", context.request().path());
+      context.end(errorResponse(413, "接口请求过大,请联系管理员!"));
+    });
+    // 415 Unsupported Media Type：请求的格式不受请求页面的支持。
+    mainRouter.errorHandler(415, context -> {
+      StaticLog.error(context.failure(), "不支持的媒体类型:{}", context.request().path());
+      context.end(errorResponse(415, "不支持的媒体类型,请联系管理员!"));
     });
     // 429异常处理
     mainRouter.errorHandler(429, context -> {
@@ -165,6 +185,16 @@ public class VertxWebHelper {
     mainRouter.errorHandler(500, context -> {
       StaticLog.error(context.failure(), "接口异常:{}", context.request().path());
       context.end(errorResponse(500, "接口异常,请联系管理员!"));
+    });
+    // 502 Bad Gateway：服务器作为网关或代理，从上游服务器收到无效响应。
+    mainRouter.errorHandler(502, context -> {
+      StaticLog.error(context.failure(), "错误的网关:{}", context.request().path());
+      context.end(errorResponse(502, "错误的网关,请联系管理员!"));
+    });
+    // 504超时异常处理
+    mainRouter.errorHandler(504, context -> {
+      StaticLog.error(context.failure(), "接口超时:{}", context.request().path());
+      context.end(errorResponse(504, "接口超时,请联系管理员!"));
     });
     // 监听HTTP服务器
     httpServer.requestHandler(mainRouter).listen(port).onComplete(res -> {

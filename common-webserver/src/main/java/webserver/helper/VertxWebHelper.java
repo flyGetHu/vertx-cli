@@ -141,6 +141,11 @@ public class VertxWebHelper {
       StaticLog.error(context.failure(), "接口超时:{}", context.request().path());
       context.end(errorResponse(504, "接口超时,请联系管理员!"));
     });
+    // 400异常处理
+    mainRouter.errorHandler(400, context -> {
+      StaticLog.error(context.failure(), "接口参数错误:{}", context.request().path());
+      context.end(errorResponse(400, "接口参数错误,请联系管理员!"));
+    });
     // 404异常处理
     mainRouter.errorHandler(404, context -> {
       StaticLog.error(context.failure(), "接口不存在:{}", context.request().path());
@@ -150,6 +155,11 @@ public class VertxWebHelper {
     mainRouter.errorHandler(405, context -> {
       StaticLog.error(context.failure(), "接口不支持:{}", context.request().path());
       context.end(errorResponse(405, "接口不支持,请联系管理员!"));
+    });
+    // 429异常处理
+    mainRouter.errorHandler(429, context -> {
+      StaticLog.error(context.failure(), "接口请求过多:{}", context.request().path());
+      context.end(errorResponse(429, "接口请求过多,请联系管理员!"));
     });
     // 500统一处理异常
     mainRouter.errorHandler(500, context -> {

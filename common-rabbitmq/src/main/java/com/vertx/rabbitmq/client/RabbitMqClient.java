@@ -4,12 +4,12 @@ import cn.hutool.log.StaticLog;
 import com.vertx.common.core.entity.app.AppConfig;
 import com.vertx.common.core.utils.StrUtil;
 import com.vertx.rabbitmq.exception.RabbitMqClientInitException;
-import io.vertx.core.Future;
 import io.vertx.rabbitmq.RabbitMQClient;
 import io.vertx.rabbitmq.RabbitMQOptions;
 
 import static com.vertx.common.core.config.VertxLoadConfig.isInit;
 import static com.vertx.common.core.config.VertxLoadConfig.vertx;
+import static io.vertx.core.Future.await;
 
 public class RabbitMqClient {
 
@@ -101,11 +101,11 @@ public class RabbitMqClient {
         rabbitMQOptions.setRequestedChannelMax(requestedChannelMax);
 
         final RabbitMQClient rabbitMQClient = RabbitMQClient.create(vertx, rabbitMQOptions);
-        Future.await(rabbitMQClient.start());
+        await(rabbitMQClient.start());
         if (config.getSendConfirm()) {
-            Future.await(rabbitMQClient.confirmSelect());
+            await(rabbitMQClient.confirmSelect());
         }
-        Future.await(rabbitMQClient.basicQos(config.getMaxQos()));
+        await(rabbitMQClient.basicQos(config.getMaxQos()));
         if (isDef) {
             RabbitMqClient.rabbitMqClient = rabbitMQClient;
         } else {

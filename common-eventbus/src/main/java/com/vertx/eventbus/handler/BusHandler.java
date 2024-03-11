@@ -3,6 +3,7 @@ package com.vertx.eventbus.handler;
 import cn.hutool.log.StaticLog;
 import com.vertx.common.core.enums.EnvEnum;
 import com.vertx.common.core.exception.UniqueAddressException;
+import com.vertx.common.core.utils.StrUtil;
 import com.vertx.eventbus.exception.RpcException;
 
 import io.vertx.core.eventbus.Message;
@@ -82,6 +83,10 @@ public interface BusHandler<Request, Response> {
   default void register() {
     // 获取服务地址
     final String address = this.getAddress();
+    if (StrUtil.isBlank(address)) {
+      // 如果服务地址为空，则抛出异常
+      throw new UniqueAddressException("服务地址不能为空");
+    }
     // 记录日志：注册服务地址
     StaticLog.info("注册服务地址:{}", address);
     // 创建消息消费者
@@ -110,13 +115,13 @@ public interface BusHandler<Request, Response> {
         // 记录日志：RPC服务反序列化请求对象失败
         StaticLog.error(e, "RPC服务反序列化请求对象失败", address);
         // 消息失败，返回错误信息
-        message.fail(1, e.getMessage());
+        message.fail(1, StrUtil.format("RPC服务反序列化请求对象失败:{}", e.getMessage()));
         return;
       } catch (Exception e) {
         // 记录日志：RPC服务处理请求失败，并返回错误信息
         StaticLog.error(e, "RPC服务处理请求失败", address);
         // 消息失败，返回错误信息
-        message.fail(1, e.getMessage());
+        message.fail(1, StrUtil.format("RPC服务处理请求失败:{}", e.getMessage()));
       }
     });
     // 设置消费者结束处理程序，记录日志：服务地址已关闭
@@ -124,7 +129,11 @@ public interface BusHandler<Request, Response> {
     // 设置消费者异常处理程序，记录日志：服务地址异常，并注销消费者
     consumer.exceptionHandler(e -> {
       StaticLog.error(e, "服务地址:{}异常", address);
-      consumer.unregister();
+      try {
+        consumer.unregister();
+      } catch (Exception ex) {
+        StaticLog.error(ex, "服务地址:{}注销失败", address);
+      }
     });
   }
 

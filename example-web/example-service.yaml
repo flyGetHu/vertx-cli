@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # 服务名称, 用于区分不同的服务, 也可以通过 kubectl get service example-service -o yaml 查看
+  name: example-service
+  # 命名空间, 用于区分不同的环境, 也可以通过 kubectl get service example-service -n default -o yaml 查看
+  namespace: default
+spec:
+  selector:
+    # 选择器, 用于关联 Service 和 Pod
+    app: example
+  # 端口, 用于暴露服务
+  ports:
+    - protocol: TCP
+      port: 3020
+      targetPort: 3020

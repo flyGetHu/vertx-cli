@@ -31,6 +31,11 @@
       <artifactId>vertx-hazelcast</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast-kubernetes</artifactId>
+      <version>${hazelcast-kubernetes.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>

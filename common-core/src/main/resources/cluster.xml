@@ -43,6 +43,16 @@
             </semaphore>
         </semaphores>
     </cp-subsystem>
+    <network>
+        <join>
+            <multicast enabled="false"/>
+            <tcp-ip enabled="false"/>
+            <kubernetes enabled="true">
+                <service-name>example-service</service-name>
+                <namespace>default</namespace>
+            </kubernetes>
+        </join>
+    </network>
 
     <properties>
         <property name="hazelcast.logging.type">log4j2</property>

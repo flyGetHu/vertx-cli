@@ -9,10 +9,6 @@ package com.vertx.common.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.JoinConfig;
-import com.hazelcast.config.NetworkConfig;
-import com.hazelcast.config.TcpIpConfig;
 import com.vertx.common.core.config.VertxLoadConfig;
 import com.vertx.common.core.enums.EnvEnum;
 import io.vertx.core.DeploymentOptions;
@@ -23,7 +19,6 @@ import io.vertx.core.eventbus.EventBusOptions;
 import io.vertx.core.impl.launcher.VertxCommandLauncher;
 import io.vertx.core.impl.launcher.VertxLifecycleHooks;
 import io.vertx.core.json.JsonObject;
-import io.vertx.spi.cluster.hazelcast.ConfigUtil;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -76,17 +71,17 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
         StaticLog.info("执行钩子函数:{}", "beforeStartingVertx");
         //创建Vertx实例时启用本机传输选项：
         vertxOptions.setPreferNativeTransport(true);
-        // 加载配置文件
-        final Config config = ConfigUtil.loadConfig();
-        // 获取网络配置
-        final NetworkConfig networkConfig = config.getNetworkConfig();
-        // 获取Join配置
-        final JoinConfig joinConfig = networkConfig.getJoin();
-        // 启用TCP/IP发现机制
-        final TcpIpConfig tcpIpConfig = joinConfig.getTcpIpConfig();
-        tcpIpConfig.setEnabled(true);
-        // 添加成员节点的IP地址和端口
-        tcpIpConfig.setMembers(Arrays.asList(CLUSTER_IPS));
+//        // 加载配置文件
+//        final Config config = ConfigUtil.loadConfig();
+//        // 获取网络配置
+//        final NetworkConfig networkConfig = config.getNetworkConfig();
+//        // 获取Join配置
+//        final JoinConfig joinConfig = networkConfig.getJoin();
+//        // 启用TCP/IP发现机制
+//        final TcpIpConfig tcpIpConfig = joinConfig.getTcpIpConfig();
+//        tcpIpConfig.setEnabled(true);
+//        // 添加成员节点的IP地址和端口
+//        tcpIpConfig.setMembers(Arrays.asList(CLUSTER_IPS));
         final EventBusOptions eventBusOptions = vertxOptions.getEventBusOptions();
         // 设置bus集群超时时间
         eventBusOptions.setConnectTimeout(1000 * 30);

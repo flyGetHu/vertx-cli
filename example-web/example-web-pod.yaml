@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-web-v1
+  namespace: default
+  labels:
+    app: example
+spec:
+  imagePullSecrets:
+    - name: regcred
+  containers:
+    - name: example-web-v1
+      image: 970780868/example-web-v1
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Always
+  

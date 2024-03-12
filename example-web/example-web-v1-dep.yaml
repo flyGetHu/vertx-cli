@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # 部署名称, 用于区分不同的部署, 也可以通过 kubectl get deployment example-web-v1 -o yaml 查看
+  name: example-web-v1
+  # 标签, 用于关联 Service 和 Pod
+  labels:
+    app: example
+spec:
+  # 副本数
+  replicas: 4
+  # 选择器, 用于关联 Service 和 Pod
+  selector:
+    matchLabels:
+      app: example
+  # 模板, 用于创建 Pod
+  template:
+    metadata:
+      name: example-web-v1
+      labels:
+        app: example
+    spec:
+      imagePullSecrets:
+        # 拉取私有仓库镜像的凭证
+        - name: regcred
+      containers:
+        - name: example-web-v1
+          image: 970780868/example-web-v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "64Mi"
+              # 1000m = 1核
+              cpu: "1000m"
+            limits:
+              # 600Mi = 600M
+              memory: "600Mi"
+              cpu: "2000m"
+      # 重启策略
+      restartPolicy: Always
+  strategy:
+    # 更新策略, 用于更新 Pod, 默认为 RollingUpdate 表示滚动更新
+    type: RollingUpdate
+    rollingUpdate:
+      # 最大不可用 Pod 数
+      maxUnavailable: 1
+      # 最大过剩 Pod 数
+      maxSurge: 1
+
+      

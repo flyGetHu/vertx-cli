@@ -4,7 +4,6 @@ import cn.hutool.log.StaticLog;
 import com.vertx.common.core.enums.EnvEnum;
 import com.vertx.common.core.exception.UniqueAddressException;
 import com.vertx.eventbus.exception.RpcException;
-
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.DecodeException;
@@ -52,13 +51,22 @@ public interface BusHandler<Request, Response> {
     try {
       // 定义一个字符串变量encode，用于存储序列化后的请求对象
       // 调用Json类的encode方法将request对象序列化为JSON字符串，并将结果赋值给encode变量
-      final String encode = Json.encode(request);
+      String encode;
+      if (request instanceof String) {
+        encode = (String) request;
+      } else {
+        encode = Json.encode(request);
+      }
       // 调用eventBus的request方法发送请求，并等待响应
       final Message<Object> message = await(eventBus.request(getAddress(), encode));
       // 获取响应消息的body部分
       final Object body = message.body();
       // 将body部分反序列化为指定类型的对象，并返回结果
-      return Json.decodeValue(Json.encode(body), getResponseClass());
+      final Class<Response> responseClass = getResponseClass();
+      if (responseClass == String.class) {
+        return (Response) body;
+      }
+      return Json.decodeValue(Json.encode(body), responseClass);
     } catch (EncodeException e) {
       // 如果序列化过程中发生异常，则记录错误日志，并返回null
       StaticLog.error(e, "RPC服务序列化请求对象失败", getAddress());
@@ -89,7 +97,13 @@ public interface BusHandler<Request, Response> {
       try {
         // 获取消息体并解码为请求对象
         final Object body = message.body();
-        final Request request = Json.decodeValue(body.toString(), getRequestClass());
+        final Class<Request> requestClass = getRequestClass();
+        Request request;
+        if (requestClass == String.class) {
+          request = (Request) body;
+        } else {
+          request = Json.decodeValue(Json.encode(body), requestClass);
+        }
         // 处理请求并返回响应
         final Response response = this.handle(request);
         // 根据响应类型转换为JSON字符串或保持原样

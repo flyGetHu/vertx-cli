@@ -50,6 +50,8 @@
             <kubernetes enabled="true">
                 <service-name>example-service</service-name>
                 <namespace>default</namespace>
+                <!-- 当设置为 true 时，Hazelcast 会尝试解析尚未准备好的地址。这意味着，即使某些 Pod 尚未完全启动，Hazelcast 也会尝试连接到它们。这对于加速集群启动过程可能很有用 -->
+                <resolve-not-ready-addresses>true</resolve-not-ready-addresses>
             </kubernetes>
         </join>
     </network>

@@ -7,7 +7,6 @@ import com.vertx.common.core.entity.db.QueryPageResponse;
 import com.vertx.common.core.enums.EnvEnum;
 import com.vertx.common.core.utils.StrUtil;
 import com.vertx.mysql.exception.DbException;
-
 import io.vertx.mysqlclient.MySQLClient;
 import io.vertx.sqlclient.Query;
 import io.vertx.sqlclient.Row;
@@ -39,27 +38,52 @@ public class MysqlHelper {
   private static final DSLContext dslContext = DSL.using(SQLDialect.MYSQL, new Settings());
 
   public static Long install(Object data) {
-    return installDsl(data, null);
+    return installDsl(data, false, null);
+  }
+
+  public static Long install(Object data, Boolean isNull) {
+    return installDsl(data, isNull, null);
   }
 
   public static Long install(Object data, SqlConnection sqlConnection) {
-    return installDsl(data, sqlConnection);
+    return installDsl(data, false, sqlConnection);
+  }
+
+  public static Long install(Object data, Boolean isNull, SqlConnection sqlConnection) {
+    return installDsl(data, isNull, sqlConnection);
   }
 
   public static int insertBatch(List<Object> data) {
-    return insertDsl(data, 100, null);
+    return insertDsl(data, 100, false, null);
+  }
+
+  public static int insertBatch(List<Object> data, Boolean isNull) {
+    return insertDsl(data, 100, isNull, null);
+  }
+
+  public static int insertBatch(List<Object> data, Boolean isNull, SqlConnection sqlConnection) {
+    return insertDsl(data, 100, isNull, sqlConnection);
   }
 
   public static int insertBatch(List<Object> data, SqlConnection sqlConnection) {
-    return insertDsl(data, 100, sqlConnection);
+    return insertDsl(data, 100, false, sqlConnection);
   }
 
   public static int insertBatch(List<Object> data, int batchSize) {
-    return insertDsl(data, batchSize, null);
+    return insertDsl(data, batchSize, false, null);
+  }
+
+
+  public static int insertBatch(List<Object> data, int batchSize, Boolean isNull) {
+    return insertDsl(data, batchSize, isNull, null);
+  }
+
+  public static int insertBatch(List<Object> data, int batchSize, Boolean isNull, SqlConnection sqlConnection) {
+    return insertDsl(data, batchSize, isNull, sqlConnection);
   }
 
   public static int insertBatch(List<Object> data, int batchSize, SqlConnection sqlConnection) {
-    return insertDsl(data, batchSize, sqlConnection);
+    return insertDsl(data, batchSize, false, sqlConnection);
   }
 
   public static int update(Object data, Condition where) {
@@ -190,7 +214,7 @@ public class MysqlHelper {
     return result;
   }
 
-  private static Long installDsl(Object data, SqlConnection sqlConnection) {
+  private static Long installDsl(Object data, Boolean isNull, SqlConnection sqlConnection) {
     if (data == null) {
       StaticLog.error("插入数据为空");
       throw new DbException("插入数据为空");
@@ -199,7 +223,7 @@ public class MysqlHelper {
       StaticLog.error("插入数据为空");
       throw new DbException("插入数据为空");
     }
-    final String sql = buildInsertSql(List.of(data));
+    final String sql = buildInsertSql(List.of(data), isNull);
     final Query<RowSet<Row>> query;
     if (sqlConnection != null) {
       query = sqlConnection.query(sql);
@@ -222,7 +246,7 @@ public class MysqlHelper {
     }
   }
 
-  private static int insertDsl(List<Object> data, int batchSize, SqlConnection connection) {
+  private static int insertDsl(List<Object> data, int batchSize, Boolean isNull, SqlConnection connection) {
     if (data == null || data.isEmpty()) {
       StaticLog.error("批量插入数据为空");
       throw new DbException("批量插入数据为空");
@@ -242,7 +266,7 @@ public class MysqlHelper {
     }
     try {
       for (List<Object> list : lists) {
-        final String querySql = buildInsertSql(list);
+        final String querySql = buildInsertSql(list, isNull);
         final RowSet<Row> rows = await(connect.query(querySql).execute());
         count += rows.rowCount();
       }
@@ -370,7 +394,7 @@ public class MysqlHelper {
     return list;
   }
 
-  private static String buildInsertSql(List<Object> datas) {
+  private static String buildInsertSql(List<Object> datas, Boolean isNll) {
     if (datas.isEmpty()) {
       StaticLog.error(">>>>>> 插入数据为空");
       throw new DbException("插入数据为空");
@@ -385,8 +409,13 @@ public class MysqlHelper {
         final String name = underlineName(field.getName());
         try {
           final Object value = field.get(data);
-          if (!name.equals("id")) {
+          if (name.equals("id")) {
+            continue;
+          }
+          if (value != null) {
             map.put(name, value);
+          } else if (isNll) {
+            map.put(name, null);
           }
         } catch (IllegalAccessException e) {
           StaticLog.error(e, "insert data error");
@@ -422,7 +451,10 @@ public class MysqlHelper {
       final String name = underlineName(field.getName());
       try {
         final Object value = field.get(data);
-        if (value != null && !name.equals("id")) {
+        if (name.equals("id")) {
+          continue;
+        }
+        if (value != null) {
           map.put(name, value);
         } else if (isNll) {
           map.put(name, null);

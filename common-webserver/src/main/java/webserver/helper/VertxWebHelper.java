@@ -11,11 +11,13 @@ import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.LoggerFormat;
 import io.vertx.ext.web.handler.LoggerHandler;
 import webserver.entity.WebServiceOptions;
+import webserver.exception.WebServerStartException;
 
 import java.util.List;
 
 import static com.vertx.common.core.config.VertxLoadConfig.*;
 import static com.vertx.common.core.entity.web.ApiResponse.errorResponse;
+import static io.vertx.core.Future.await;
 
 public class VertxWebHelper {
   public void startHttpServer(WebServiceOptions options) {
@@ -197,13 +199,12 @@ public class VertxWebHelper {
       context.end(errorResponse(504, "接口超时,请联系管理员!"));
     });
     // 监听HTTP服务器
-    httpServer.requestHandler(mainRouter).listen(port).onComplete(res -> {
-      if (res.succeeded()) {
-        StaticLog.info("启动http服务器:{}:{}", host, port);
-      } else {
-        StaticLog.error(res.cause(), "http server start error");
-        throw new webserver.exception.WebServerStartException(res.cause());
-      }
-    });
+    try {
+      await(httpServer.requestHandler(mainRouter).listen(port));
+    } catch (Exception e) {
+      StaticLog.error(e, "启动http服务器失败");
+      throw new WebServerStartException("启动http服务器失败", e);
+    }
+    StaticLog.info("启动http服务器:{}:{}", host, port);
   }
 }

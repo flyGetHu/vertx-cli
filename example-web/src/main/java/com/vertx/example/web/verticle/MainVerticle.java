@@ -30,6 +30,7 @@ public class MainVerticle extends AbstractVerticle {
             await(vertx.deployVerticle(WebVerticle.class.getName(), deploymentOptions));
             await(vertx.deployVerticle(BusVerticle.class.getName(), deploymentOptions));
             await(vertx.deployVerticle(RabbitMqVerticle.class.getName(), deploymentOptions));
+            await(vertx.deployVerticle(TaskVerticle.class.getName(), deploymentOptions));
             StaticLog.info("部署成功");
             StaticLog.info("启动成功,耗时{}ms", System.currentTimeMillis() - start);
         } catch (Exception e) {

@@ -6,7 +6,6 @@ import com.vertx.common.core.exception.TryLockException;
 
 import io.vertx.core.Future;
 import io.vertx.core.shareddata.Lock;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -121,6 +120,10 @@ public class LockUtil {
     }
   }
 
+  public static void withLock(String key, Runnable runnable) {
+    withLock(key, false, runnable);
+  }
+
   /**
    * 在锁内执行提供的供应商。使用提供的密钥获取锁。
    *
@@ -142,6 +145,10 @@ public class LockUtil {
       StaticLog.error(message, key);
       throw new TryLockException(message);
     }
+  }
+
+  public static <T> T withLock(String key, Supplier<T> supplier) {
+    return withLock(key, false, supplier);
   }
 
   /**
@@ -168,6 +175,10 @@ public class LockUtil {
     }
   }
 
+  public static void withLock(String key, long timeout, Runnable runnable) {
+    withLock(key, timeout, false, runnable);
+  }
+
   /**
    * 在锁内执行提供的供应商。使用提供的密钥和超时来获取锁定。
    * 如果在指定的超时时间内无法获得锁，则抛出异常。
@@ -192,5 +203,9 @@ public class LockUtil {
       StaticLog.error(message, key);
       throw new TryLockException(message);
     }
+  }
+
+  public static <T> T withLock(String key, long timeout, Supplier<T> supplier) {
+    return withLock(key, timeout, false, supplier);
   }
 }

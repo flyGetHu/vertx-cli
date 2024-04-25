@@ -24,6 +24,9 @@ import java.util.Set;
 
 import static io.vertx.core.Future.await;
 
+/**
+ * The VertxLoadConfig class represents the configuration for the Vert.x application.
+ */
 public class VertxLoadConfig {
 
     // 是否已经初始化
@@ -118,6 +121,9 @@ public class VertxLoadConfig {
         isInit = true;
     }
 
+    /**
+     * 根据指定的注释过滤本地类并检查唯一地址。
+     */
     private void localClassFilter() {
         final Set<Class<?>> classes = ClassUtil.scanPackage();
         // 用于存储事件总线的唯一地址

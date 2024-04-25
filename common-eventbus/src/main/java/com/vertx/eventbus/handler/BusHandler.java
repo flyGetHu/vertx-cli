@@ -5,14 +5,11 @@ import com.vertx.common.core.enums.EnvEnum;
 import com.vertx.common.core.exception.UniqueAddressException;
 import com.vertx.common.core.utils.StrUtil;
 import com.vertx.eventbus.exception.RpcException;
-
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.EncodeException;
 import io.vertx.core.json.Json;
-
-import java.util.Objects;
 
 import static com.vertx.common.core.config.VertxLoadConfig.active;
 import static com.vertx.common.core.config.VertxLoadConfig.eventBus;
@@ -20,121 +17,123 @@ import static io.vertx.core.Future.await;
 
 public interface BusHandler<Request, Response> {
 
-  /**
-   * 获取请求类
-   *
-   * @return 返回请求类
-   */
-  Class<Request> getRequestClass();
+    /**
+     * 获取请求类
+     *
+     * @return 返回请求类
+     */
+    Class<Request> getRequestClass();
 
-  /**
-   * 返回Response类型的Class对象
-   *
-   * @return 返回Response类型的Class对象
-   */
-  Class<Response> getResponseClass();
+    /**
+     * 返回Response类型的Class对象
+     *
+     * @return 返回Response类型的Class对象
+     */
+    Class<Response> getResponseClass();
 
-  /**
-   * 获取地址
-   *
-   * @return 地址
-   */
-  String getAddress();
+    /**
+     * 获取地址
+     *
+     * @return 地址
+     */
+    String getAddress();
 
-  /**
-   * 处理请求并返回响应。
-   *
-   * @param request 包含请求信息的对象
-   * @return 包含响应信息的对象
-   */
-  Response handle(Request request);
+    /**
+     * 处理请求并返回响应。
+     *
+     * @param request 包含请求信息的对象
+     * @return 包含响应信息的对象
+     */
+    Response handle(Request request);
 
-  default Response call(Request request) {
-    try {
-      // 定义一个字符串变量encode，用于存储序列化后的请求对象
-      // 调用Json类的encode方法将request对象序列化为JSON字符串，并将结果赋值给encode变量
-      final String encode = Json.encode(request);
-      // 调用eventBus的request方法发送请求，并等待响应
-      final Message<Object> message = await(eventBus.request(getAddress(), encode));
-      // 获取响应消息的body部分
-      final Object body = message.body();
-      // 将body部分反序列化为指定类型的对象，并返回结果
-      return Json.decodeValue(Json.encode(body), getResponseClass());
-    } catch (EncodeException e) {
-      // 如果序列化过程中发生异常，则记录错误日志，并返回null
-      StaticLog.error(e, "RPC服务序列化请求对象失败", getAddress());
-      throw new RpcException("RPC服务序列化请求对象失败", e);
-    } catch (DecodeException e) {
-      // 如果反序列化过程中发生异常，则记录错误日志，并返回null
-      StaticLog.error(e, "RPC服务反序列化响应对象失败", getAddress());
-      throw new RpcException("RPC服务反序列化响应对象失败", e);
-    } catch (Exception e) {
-      // 如果处理请求过程中发生异常，则记录错误日志，并返回null
-      StaticLog.error(e, "RPC服务处理请求失败", getAddress());
-      throw new RpcException("RPC服务处理请求失败", e);
-    }
-  }
-
-  /**
-   * 注册服务地址
-   *
-   * @throws UniqueAddressException 如果服务地址已存在，则抛出该异常
-   */
-  default void register() {
-    // 获取服务地址
-    final String address = this.getAddress();
-    if (StrUtil.isBlank(address)) {
-      // 如果服务地址为空，则抛出异常
-      throw new UniqueAddressException("服务地址不能为空");
-    }
-    // 记录日志：注册服务地址
-    StaticLog.info("注册服务地址:{}", address);
-    // 创建消息消费者
-    final MessageConsumer<Object> consumer = eventBus.consumer(address, message -> {
-      try {
-        // 获取消息体并解码为请求对象
-        final Object body = message.body();
-        final Request request = Json.decodeValue(body.toString(), getRequestClass());
-        // 处理请求并返回响应
-        final Response response = this.handle(request);
-        // 根据响应类型转换为JSON字符串或保持原样
-        final String responseJson;
-        if (response instanceof String) {
-          responseJson = (String) response;
-        } else {
-          responseJson = Json.encode(response);
+    default Response call(Request request) {
+        try {
+            // 定义一个字符串变量encode，用于存储序列化后的请求对象
+            // 调用Json类的encode方法将request对象序列化为JSON字符串，并将结果赋值给encode变量
+            final String encode = Json.encode(request);
+            // 调用eventBus的request方法发送请求，并等待响应
+            final Message<Object> message = await(eventBus.request(getAddress(), encode));
+            // 获取响应消息的body部分
+            final Object body = message.body();
+            // 将body部分反序列化为指定类型的对象，并返回结果
+            return Json.decodeValue(Json.encode(body), getResponseClass());
+        } catch (EncodeException e) {
+            // 如果序列化过程中发生异常，则记录错误日志，并返回null
+            StaticLog.error(e, "RPC服务序列化请求对象失败", getAddress());
+            throw new RpcException("RPC服务序列化请求对象失败", e);
+        } catch (DecodeException e) {
+            // 如果反序列化过程中发生异常，则记录错误日志，并返回null
+            StaticLog.error(e, "RPC服务反序列化响应对象失败", getAddress());
+            throw new RpcException("RPC服务反序列化响应对象失败", e);
+        } catch (Exception e) {
+            // 如果处理请求过程中发生异常，则记录错误日志，并返回null
+            StaticLog.error(e, "RPC服务处理请求失败", getAddress());
+            throw new RpcException("RPC服务处理请求失败", e);
         }
-        // 回复消息，并设置响应内容为JSON字符串或保持原样
-        message.reply(responseJson);
-        // 判断环境是否为非生产环境，并记录日志：RPC服务处理请求及返回响应
-        if (!Objects.equals(active, EnvEnum.PROD.getValue())) {
-          final String requestJson = Json.encode(request);
-          StaticLog.debug("RPC服务处理请求:{},请求参数:{},返回响应:{}", address, requestJson, responseJson);
+    }
+
+    /**
+     * 注册服务地址
+     *
+     * @throws UniqueAddressException 如果服务地址已存在，则抛出该异常
+     */
+    default void register() {
+        // 获取服务地址
+        final String address = this.getAddress();
+        if (StrUtil.isBlank(address)) {
+            // 如果服务地址为空，则抛出异常
+            throw new UniqueAddressException("服务地址不能为空");
         }
-      } catch (DecodeException e) {
-        // 记录日志：RPC服务反序列化请求对象失败
-        StaticLog.error(e, "RPC服务反序列化请求对象失败", address);
-        // 消息失败，返回错误信息
-        message.fail(1, StrUtil.format("RPC服务反序列化请求对象失败:{}", e.getMessage()));
-        return;
-      } catch (Exception e) {
-        // 记录日志：RPC服务处理请求失败，并返回错误信息
-        StaticLog.error(e, "RPC服务处理请求失败", address);
-        // 消息失败，返回错误信息
-        message.fail(1, StrUtil.format("RPC服务处理请求失败:{}", e.getMessage()));
-      }
-    });
-    // 设置消费者结束处理程序，记录日志：服务地址已关闭
-    consumer.endHandler(v -> StaticLog.info("服务地址:{}已关闭", address));
-    // 设置消费者异常处理程序，记录日志：服务地址异常，并注销消费者
-    consumer.exceptionHandler(e -> {
-      StaticLog.error(e, "服务地址:{}异常", address);
-      try {
-        consumer.unregister();
-      } catch (Exception ex) {
-        StaticLog.error(ex, "服务地址:{}注销失败", address);
-      }
-    });
-  }
+        // 记录日志：注册服务地址
+        StaticLog.info("注册服务地址:{}", address);
+        // 创建消息消费者
+        final MessageConsumer<Object> consumer = eventBus.consumer(address, message -> {
+            try {
+                // 获取消息体并解码为请求对象
+                final Object body = message.body();
+                final Request request = Json.decodeValue(body.toString(), getRequestClass());
+                if (request == null) {
+                    throw new RpcException(StrUtil.format("{}:请求对象为空", address), null);
+                }
+                // 处理请求并返回响应
+                final Response response = this.handle(request);
+                // 根据响应类型转换为JSON字符串或保持原样
+                final String responseJson;
+                if (response instanceof String) {
+                    responseJson = (String) response;
+                } else {
+                    responseJson = Json.encode(response);
+                }
+                // 回复消息，并设置响应内容为JSON字符串或保持原样
+                message.reply(responseJson);
+                // 判断环境是否为非生产环境，并记录日志：RPC服务处理请求及返回响应
+                if (!StrUtil.equals(active, EnvEnum.PROD.getValue())) {
+                    final String requestJson = Json.encode(request);
+                    StaticLog.debug("RPC服务处理请求:{},请求参数:{},返回响应:{}", address, requestJson, responseJson);
+                }
+            } catch (DecodeException e) {
+                // 记录日志：RPC服务反序列化请求对象失败
+                StaticLog.error(e, "RPC服务反序列化请求对象失败", address);
+                // 消息失败，返回错误信息
+                message.fail(1, StrUtil.format("RPC服务反序列化请求对象失败:{}", e.getMessage()));
+            } catch (Exception e) {
+                // 记录日志：RPC服务处理请求失败，并返回错误信息
+                StaticLog.error(e, "RPC服务处理请求失败", address);
+                // 消息失败，返回错误信息
+                message.fail(1, StrUtil.format("RPC服务处理请求失败:{}", e.getMessage()));
+            }
+        });
+        // 设置消费者结束处理程序，记录日志：服务地址已关闭
+        consumer.endHandler(v -> StaticLog.info("服务地址:{}已关闭", address));
+        // 设置消费者异常处理程序，记录日志：服务地址异常，并注销消费者
+        consumer.exceptionHandler(e -> {
+            StaticLog.error(e, "服务地址:{}异常", address);
+            try {
+                consumer.unregister();
+            } catch (Exception ex) {
+                StaticLog.error(ex, "服务地址:{}注销失败", address);
+            }
+        });
+    }
 
 }

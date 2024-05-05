@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+import cn.hutool.log.StaticLog;
+
 /**
  * Utility class for generating random values.
  */
@@ -18,6 +20,10 @@ public class PasswordUtil {
      * @throws NoSuchAlgorithmException 如果SHA-256算法不可用
      */
     public static String hashPassword(String password) throws NoSuchAlgorithmException {
+        if (password == null || password.isEmpty()) {
+            StaticLog.error("PasswordUtil.hashPassword: password is null or empty.");
+            return null;
+        }
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -38,7 +44,13 @@ public class PasswordUtil {
      * @return 如果密码与带盐的哈希密码匹配，则返回true，否则返回false。
      * @throws NoSuchAlgorithmException 如果SHA-256算法不可用。
      */
-    public static boolean verifyPassword(String password, String hashedPasswordWithSalt) throws NoSuchAlgorithmException {
+    public static boolean verifyPassword(String password, String hashedPasswordWithSalt)
+            throws NoSuchAlgorithmException {
+        if (password == null || password.isEmpty() || hashedPasswordWithSalt == null
+                || hashedPasswordWithSalt.isEmpty()) {
+            StaticLog.error("Password or hashed password is empty.");
+            return false;
+        }
         String[] parts = hashedPasswordWithSalt.split("\\$");
         byte[] salt = Base64.getDecoder().decode(parts[0]);
         String hashedPassword = parts[1];

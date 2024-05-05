@@ -18,7 +18,7 @@ public class MainVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) throws Exception {
         final long start = System.currentTimeMillis();
         try {
-            new VertxLoadConfig().init("");
+            new VertxLoadConfig().init("huan");
             // 初始化数据库连接
             new MysqlClient().init(VertxLoadConfig.appConfig.getDatabase().getMysql(), true);
             new RabbitMqClient().init(VertxLoadConfig.appConfig.getMq().getRabbitmq(), true);

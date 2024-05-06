@@ -1,6 +1,7 @@
 package com.vertx.redis.helper;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import io.vertx.redis.client.Response;
 
@@ -15,6 +16,10 @@ public class RedisHelper {
     public static class Str {
         public static Boolean set(String key, String value) {
             try {
+                if (StrUtil.isBlank(key) || StrUtil.isBlank(value)) {
+                    StaticLog.warn("redis set key or value is null");
+                    return false;
+                }
                 await(redisClient.set(java.util.List.of(key, value)));
                 return true;
             } catch (Throwable e) {
@@ -25,6 +30,10 @@ public class RedisHelper {
 
         public static Boolean set(String key, String value, Long seconds) {
             try {
+                if (seconds == null || seconds <= 0) {
+                    StaticLog.warn("redis set seconds is null or less than 0");
+                    return false;
+                }
                 await(redisClient.setex(key, seconds.toString(), value));
                 return true;
             } catch (Throwable e) {
@@ -35,6 +44,10 @@ public class RedisHelper {
 
         public static String get(String key) {
             try {
+                if (StrUtil.isBlank(key)) {
+                    StaticLog.warn("redis get key is null");
+                    return null;
+                }
                 Response value = await(redisClient.get(key));
                 return value != null ? value.toString() : null;
             } catch (Throwable e) {
@@ -45,6 +58,10 @@ public class RedisHelper {
 
         public static Boolean del(String key) {
             try {
+                if (StrUtil.isBlank(key)) {
+                    StaticLog.warn("redis del key is null");
+                    return false;
+                }
                 await(redisClient.del(java.util.List.of(key)));
                 return true;
             } catch (Throwable e) {
@@ -56,6 +73,10 @@ public class RedisHelper {
         public static Boolean expire(String key, Long seconds) {
             if (seconds == null || seconds <= 0) {
                 StaticLog.warn("redis expire seconds is null or less than 0");
+                return false;
+            }
+            if (StrUtil.isBlank(key)) {
+                StaticLog.warn("redis expire key is null");
                 return false;
             }
             try {
@@ -77,6 +98,10 @@ public class RedisHelper {
 
         public static Boolean setnx(String key, String value) {
             try {
+                if (StrUtil.isBlank(key) || StrUtil.isBlank(value)) {
+                    StaticLog.warn("redis setnx key or value is null");
+                    return false;
+                }
                 Response value1 = await(redisClient.setnx(key, value));
                 return value1 != null && value1.toLong() == 1;
             } catch (Throwable e) {
@@ -93,6 +118,10 @@ public class RedisHelper {
          */
         public static Long incr(String key) {
             try {
+                if (StrUtil.isBlank(key)) {
+                    StaticLog.warn("redis incr key is null");
+                    return null;
+                }
                 Response value = await(redisClient.incr(key));
                 return value != null ? value.toLong() : null;
             } catch (Throwable e) {
@@ -109,6 +138,10 @@ public class RedisHelper {
          */
         public static Long decr(String key) {
             try {
+                if (StrUtil.isBlank(key)) {
+                    StaticLog.warn("redis decr key is null");
+                    return null;
+                }
                 Response value = await(redisClient.decr(key));
                 return value != null ? value.toLong() : null;
             } catch (Throwable e) {
@@ -129,6 +162,10 @@ public class RedisHelper {
          */
         public static Boolean hset(String key, String field, String value) {
             try {
+                if (StrUtil.isBlank(key) || StrUtil.isBlank(field) || StrUtil.isBlank(value)) {
+                    StaticLog.warn("redis hset key or field or value is null");
+                    return false;
+                }
                 await(redisClient.hset(java.util.List.of(key, field, value)));
                 return true;
             } catch (Throwable e) {
@@ -146,6 +183,10 @@ public class RedisHelper {
          */
         public static String hget(String key, String field) {
             try {
+                if (StrUtil.isBlank(key) || StrUtil.isBlank(field)) {
+                    StaticLog.warn("redis hget key or field is null");
+                    return null;
+                }
                 Response value = await(redisClient.hget(key, field));
                 return value != null ? value.toString() : null;
             } catch (Throwable e) {
@@ -182,8 +223,8 @@ public class RedisHelper {
                 Response value = await(redisClient.hgetall(key));
                 if (value != null) {
                     return value.stream().map(String::valueOf).collect(Collectors.toMap(
-                            String::toString,
-                            String::toString));
+                        String::toString,
+                        String::toString));
                 }
                 return null;
             } catch (Throwable e) {
@@ -627,7 +668,7 @@ public class RedisHelper {
         public static java.util.List<String> zrangebyscore(String key, Double min, Double max) {
             try {
                 Response value = await(
-                        redisClient.zrangebyscore(java.util.List.of(key, Double.toString(min), Double.toString(max))));
+                    redisClient.zrangebyscore(java.util.List.of(key, Double.toString(min), Double.toString(max))));
                 return value != null ? value.stream().map(String::valueOf).collect(Collectors.toList()) : null;
             } catch (Throwable e) {
                 StaticLog.error(e, "redis zrangebyscore error");
@@ -652,7 +693,7 @@ public class RedisHelper {
         public static Boolean geoadd(String key, Double longitude, Double latitude, String member) {
             try {
                 await(
-                        redisClient.geoadd(java.util.List.of(key, Double.toString(longitude), Double.toString(latitude), member)));
+                    redisClient.geoadd(java.util.List.of(key, Double.toString(longitude), Double.toString(latitude), member)));
                 return true;
             } catch (Throwable e) {
                 StaticLog.error(e, "redis geoadd error");
@@ -727,7 +768,7 @@ public class RedisHelper {
                                                        String unit) {
             try {
                 Response value = await(redisClient.georadius(java.util.List.of(key, Double.toString(longitude),
-                        Double.toString(latitude), Double.toString(radius), unit)));
+                    Double.toString(latitude), Double.toString(radius), unit)));
 
                 return value != null ? value.stream().map(String::valueOf).collect(Collectors.toList()) : null;
             } catch (Throwable e) {
@@ -748,7 +789,7 @@ public class RedisHelper {
         public static java.util.List<String> georadiusbymember(String key, String member, Double radius, String unit) {
             try {
                 Response value = await(
-                        redisClient.georadiusbymember(java.util.List.of(key, member, Double.toString(radius), unit)));
+                    redisClient.georadiusbymember(java.util.List.of(key, member, Double.toString(radius), unit)));
 
                 return value != null ? value.stream().map(String::valueOf).collect(Collectors.toList()) : null;
 

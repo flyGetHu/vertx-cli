@@ -38,7 +38,7 @@ public class ExampleWebApp {
         final HazelcastClusterManager hazelcastClusterManager = new HazelcastClusterManager(config);
         // 集群Vertx
         Vertx.builder().withClusterManager(hazelcastClusterManager).buildClustered()
-                .onSuccess(vertx -> {
+                .compose(vertx -> {
                     // 设置系统属性
                     System.setProperty("org.jooq.no-logo", "true");
                     System.setProperty("org.jooq.no-tips", "true");
@@ -46,12 +46,15 @@ public class ExampleWebApp {
                     final DeploymentOptions deploymentOptions = new DeploymentOptions();
                     deploymentOptions.setThreadingModel(ThreadingModel.VIRTUAL_THREAD);
                     // 部署Verticle
-                    vertx.deployVerticle(MainVerticle.class.getName(), deploymentOptions);
+                    return vertx.deployVerticle(MainVerticle.class.getName(), deploymentOptions);
+                })
+                .onSuccess(vertx -> {
                     // 日志信息：应用启动成功
                     StaticLog.info("App start success");
                 }).onFailure(e -> {
                     // 日志错误信息：应用启动失败
-                    StaticLog.error("App start fail", e);
+                    StaticLog.error(e, "App start fail");
+                    Vertx.currentContext().owner().close();
                 });
     }
 }

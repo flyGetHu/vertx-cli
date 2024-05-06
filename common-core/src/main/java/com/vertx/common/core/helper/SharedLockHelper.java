@@ -7,6 +7,9 @@ import io.vertx.core.shareddata.Lock;
 import static com.vertx.common.core.config.VertxLoadConfig.sharedData;
 import static io.vertx.core.Future.await;
 
+/**
+ * Helper class for obtaining and managing locks.
+ */
 public class SharedLockHelper {
 
   /**
@@ -62,6 +65,13 @@ public class SharedLockHelper {
     return await(sharedData.getLocalLock(StrUtil.format(sharedLockEnum.getKey(), (Object[]) args)));
   }
 
+  /**
+   * Executes a block of code within a local lock obtained from a shared lock enum and arguments.
+   *
+   * @param sharedLockEnum the shared lock enum
+   * @param args           the lock arguments
+   * @param block          the code block to execute
+   */
   public static void withLocalLock(ISharedLockSharedLockEnum sharedLockEnum, String[] args, Runnable block) {
     Lock lock = getLocalLock(sharedLockEnum, args);
     try {
@@ -75,6 +85,14 @@ public class SharedLockHelper {
     return await(sharedData.getLocalLockWithTimeout(StrUtil.format(sharedLockEnum.getKey(), (Object[]) args), timeout));
   }
 
+  /**
+   * Executes a block of code within a local lock obtained from a shared lock enum and arguments.
+   *
+   * @param sharedLockEnum the shared lock enum
+   * @param timeout        the timeout in milliseconds
+   * @param args           the lock arguments
+   * @param block          the code block to execute
+   */
   public static void withLocalLockWithTimeout(ISharedLockSharedLockEnum sharedLockEnum, long timeout, String[] args,
       Runnable block) {
     Lock lock = getLocalLockWithTimeout(sharedLockEnum, timeout, args);

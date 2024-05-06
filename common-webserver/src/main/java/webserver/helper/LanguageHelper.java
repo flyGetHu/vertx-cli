@@ -58,7 +58,7 @@ public class LanguageHelper {
             case "pu" -> languageData.getPu();
             default -> languageData.getEn();
         };
-        return StrUtil.format(msg, args);
+        return StrUtil.format(msg, (Object[]) args);
     }
 
     /**

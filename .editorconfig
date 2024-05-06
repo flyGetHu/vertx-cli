@@ -1,0 +1,27 @@
+# Editor configuration, see http://editorconfig.org
+
+# Root directory
+root = true
+
+[*]
+# Charset
+charset = utf-8
+# End of line
+end_of_line = lf
+# Indentation style - use spaces
+indent_style = space
+# Indentation size
+indent_size = 4
+# Trim trailing whitespace
+trim_trailing_whitespace = true
+
+# Java files
+[*.java]
+# Use Unix-style line endings
+end_of_line = lf
+# Indentation size for Java files
+indent_size = 4
+# Use tabs for indentation in Java files
+indent_style = space
+# Insert a new line at the end of the file
+insert_final_newline = true

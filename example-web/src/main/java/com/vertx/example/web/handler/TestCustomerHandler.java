@@ -1,10 +1,11 @@
 package com.vertx.example.web.handler;
 
+import cn.hutool.log.StaticLog;
 import com.vertx.common.core.annotations.UniqueAddress;
 import com.vertx.common.core.entity.mq.MqMessageData;
 import com.vertx.common.core.enums.ModelEnum;
-import com.vertx.example.web.model.User;
 import com.vertx.example.web.enums.RabbitMqExChangeEnum;
+import com.vertx.example.web.model.User;
 import com.vertx.rabbitmq.handler.RabbitMqHandler;
 import lombok.Data;
 
@@ -17,12 +18,6 @@ public class TestCustomerHandler implements RabbitMqHandler<User> {
 
     private String queueName = "test";
     private String date = "2023-08-03";
-    private boolean durable = true;
-    private boolean exclusive = false;
-    private int maxInternalQueueSize = 100;
-    private boolean autoAck = false;
-    private int maxRetry = 3;
-    private long retryInterval = 1000;
 
     @Override
     public String handle(User user) {
@@ -31,11 +26,12 @@ public class TestCustomerHandler implements RabbitMqHandler<User> {
 
     @Override
     public String persist(MqMessageData<User> message) {
+        StaticLog.info("persist: {}", message);
         return null;
     }
 
     @Override
     public void callback(String msg, String msgId) {
-
+        StaticLog.info("callback: msg: {}, msgId: {}", msg, msgId);
     }
 }

@@ -7,7 +7,6 @@ import com.vertx.eventbus.exception.RpcException;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.DecodeException;
-import io.vertx.core.json.EncodeException;
 import io.vertx.core.json.Json;
 
 import java.util.Objects;
@@ -40,12 +39,28 @@ public interface BusHandler<Request, Response> {
   String getAddress();
 
   /**
+   * 是否启用兜底函数
+   */
+  default boolean enableFallback() {
+    return false;
+  }
+  /**
    * 处理请求并返回响应。
    *
    * @param request 包含请求信息的对象
    * @return 包含响应信息的对象
    */
   Response handle(Request request);
+
+  /**
+   * 兜底函数
+   *
+   * @param request 请求
+   * @return 响应
+   */
+  default Response handleFallback(Request request) {
+    return null;
+  }
 
   default Response call(Request request) {
     try {
@@ -67,15 +82,16 @@ public interface BusHandler<Request, Response> {
         return (Response) body;
       }
       return Json.decodeValue(Json.encode(body), responseClass);
-    } catch (EncodeException e) {
-      // 如果序列化过程中发生异常，则记录错误日志，并返回null
-      StaticLog.error(e, "RPC服务序列化请求对象失败", getAddress());
-      throw new RpcException("RPC服务序列化请求对象失败", e);
-    } catch (DecodeException e) {
-      // 如果反序列化过程中发生异常，则记录错误日志，并返回null
-      StaticLog.error(e, "RPC服务反序列化响应对象失败", getAddress());
-      throw new RpcException("RPC服务反序列化响应对象失败", e);
     } catch (Exception e) {
+      // 如果启用了兜底函数，则调用兜底函数处理请求
+      if (enableFallback()) {
+        try {
+          return handleFallback(request);
+        } catch (Exception ex) {
+          StaticLog.error(ex, "RPC服务处理兜底请求失败", getAddress());
+          throw new RpcException("RPC服务处理兜底请求失败", ex);
+        }
+      }
       // 如果处理请求过程中发生异常，则记录错误日志，并返回null
       StaticLog.error(e, "RPC服务处理请求失败", getAddress());
       throw new RpcException("RPC服务处理请求失败", e);

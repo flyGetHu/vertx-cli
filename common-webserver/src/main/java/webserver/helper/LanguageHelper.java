@@ -4,7 +4,7 @@ import cn.hutool.log.StaticLog;
 import com.vertx.common.core.entity.language.LanguageData;
 import com.vertx.common.core.enums.LanguageTypeEnum;
 import com.vertx.common.core.enums.SharedLockSharedLockEnum;
-import com.vertx.common.core.helper.SharedLockHelper;
+import com.vertx.common.core.utils.LockUtil;
 import com.vertx.common.core.utils.StrUtil;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
@@ -76,7 +76,7 @@ public class LanguageHelper {
             return false;
         }
         // 添加锁 防止多次读取文件
-        final Lock localLock = SharedLockHelper.getLocalLock(SharedLockSharedLockEnum.INIT_LANGUAGE, null);
+        final Lock localLock = LockUtil.tryLocaLock(SharedLockSharedLockEnum.INIT_LANGUAGE.getKey(), 2L);
         try {
             // 再次检查，防止在等待锁的过程中，其他线程已经加载了配置文件
             if (!languageDataMap.isEmpty()) {

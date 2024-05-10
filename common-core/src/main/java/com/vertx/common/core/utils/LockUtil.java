@@ -3,9 +3,9 @@ package com.vertx.common.core.utils;
 import cn.hutool.log.StaticLog;
 import com.vertx.common.core.config.VertxLoadConfig;
 import com.vertx.common.core.exception.TryLockException;
-
 import io.vertx.core.Future;
 import io.vertx.core.shareddata.Lock;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -62,7 +62,7 @@ public class LockUtil {
    * @return 获得的锁，如果在指定的超时内无法获得锁，则抛出异常 TryLockException
    */
   public static Lock tryLock(String key, long timeout, TimeUnit unit, Boolean local) {
-    Lock lock = null;
+      Lock lock;
     try {
       if (local) {
         lock = Future.await(VertxLoadConfig.sharedData.getLocalLockWithTimeout(key, unit.toMillis(timeout)));
@@ -84,7 +84,7 @@ public class LockUtil {
    * @return 获得的锁，如果无法获得锁，则抛出异常 TryLockException
    */
   public static Lock tryLock(String key, Boolean local) {
-    Lock lock = null;
+      Lock lock;
     try {
       if (local) {
         lock = Future.await(VertxLoadConfig.sharedData.getLocalLock(key));

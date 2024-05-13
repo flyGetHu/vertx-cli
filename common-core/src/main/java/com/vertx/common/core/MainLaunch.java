@@ -9,10 +9,7 @@ package com.vertx.common.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.JoinConfig;
-import com.hazelcast.config.NetworkConfig;
-import com.hazelcast.config.TcpIpConfig;
+import com.hazelcast.config.*;
 import com.vertx.common.core.config.VertxLoadConfig;
 import com.vertx.common.core.enums.EnvEnum;
 import io.vertx.core.DeploymentOptions;
@@ -26,6 +23,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.ConfigUtil;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -86,7 +84,12 @@ public class MainLaunch extends VertxCommandLauncher implements VertxLifecycleHo
         final TcpIpConfig tcpIpConfig = joinConfig.getTcpIpConfig();
         tcpIpConfig.setEnabled(true);
         // 添加成员节点的IP地址和端口
-        tcpIpConfig.setMembers(Arrays.asList(CLUSTER_IPS));
+        final List<String> members = tcpIpConfig.getMembers();
+        members.addAll(Arrays.asList(CLUSTER_IPS));
+        tcpIpConfig.setMembers(members.stream().distinct().toList());
+        // 禁用组播发现
+        final MulticastConfig multicastConfig = joinConfig.getMulticastConfig();
+        multicastConfig.setEnabled(false);
         final EventBusOptions eventBusOptions = vertxOptions.getEventBusOptions();
         // 设置bus集群超时时间
         eventBusOptions.setConnectTimeout(1000 * 30);

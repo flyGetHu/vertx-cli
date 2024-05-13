@@ -26,6 +26,7 @@ import static io.vertx.core.Future.await;
 
 public class RabbitMqHelper {
 
+
     /**
      * 发送消息到交换机
      *
@@ -76,10 +77,22 @@ public class RabbitMqHelper {
         }
     }
 
-
     public static <T> void sendMessageToQueue(RabbitMqHandler<T> rabbitMqHandler, T message) throws RabbitMQSendException {
+        sendMessageToQueue(rabbitMqHandler, message, null);
+    }
+
+    /**
+     * 发送消息到队列
+     *
+     * @param rabbitMqHandler 队列处理器
+     * @param message         发送的消息体
+     * @param customQueueName 自定义队列名称
+     * @param <T>
+     * @throws RabbitMQSendException
+     */
+    public static <T> void sendMessageToQueue(RabbitMqHandler<T> rabbitMqHandler, T message, String customQueueName) throws RabbitMQSendException {
         // Assemble queue name
-        String queueName = assembleQueueName(rabbitMqHandler);
+        String queueName = StrUtil.isBlank(customQueueName) ? assembleQueueName(rabbitMqHandler) : customQueueName;
         if (queueName.isBlank()) {
             throw new RabbitMQSendException("队列名称不能为空");
         }
@@ -117,18 +130,23 @@ public class RabbitMqHelper {
 
     private static final ConcurrentHashMap<String, Integer> retryMap = new ConcurrentHashMap<>();
 
+    public static <T> void registerConsumer(RabbitMqHandler<T> rabbitMqHandler) {
+        registerConsumer(rabbitMqHandler, null);
+    }
+
 
     /**
      * 注册消费者
      *
      * @param rabbitMqHandler 队列处理器
      * @param <T>             消息类型
+     * @param customQueueName 自定义队列名称
      */
-    public static <T> void registerConsumer(RabbitMqHandler<T> rabbitMqHandler) {
+    public static <T> void registerConsumer(RabbitMqHandler<T> rabbitMqHandler, String customQueueName) {
         // Register queue
         registerQueue(rabbitMqHandler);
         // Assemble queue name
-        String queueName = assembleQueueName(rabbitMqHandler);
+        String queueName = StrUtil.isBlank(customQueueName) ? assembleQueueName(rabbitMqHandler) : customQueueName;
         // Register consumer
         QueueOptions queueOptions = new QueueOptions();
         queueOptions.setMaxInternalQueueSize(rabbitMqHandler.getMaxInternalQueueSize());

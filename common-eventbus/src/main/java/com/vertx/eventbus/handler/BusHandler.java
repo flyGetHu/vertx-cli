@@ -49,6 +49,8 @@ public interface BusHandler<Request, Response> {
 
     /**
      * 是否启用兜底函数
+     * 如果启用,请在定义businessHandler时,必须重写handleFallback方法
+     * 默认返回false
      */
     default boolean enableFallback() {
         return false;
@@ -56,7 +58,7 @@ public interface BusHandler<Request, Response> {
 
     /**
      * 兜底函数
-     *
+     *  此函数应在bushandler中重写,不能放在impl中,负责无效
      * @param request 请求
      * @return 响应
      */

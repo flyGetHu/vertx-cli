@@ -65,7 +65,9 @@ public interface RabbitMqHandler<Request> {
 
 
     // 消息消费处理器，用于处理消费消息的业务逻辑
-    String handle(Request request);
+    default String handle(Request request) {
+        return null;
+    }
 
     // 消息持久化策略，消息发送前会执行此逻辑，可以将消息保存到数据库或者redis中，用于消息重试
     default String persist(MqMessageData<Request> message) {
